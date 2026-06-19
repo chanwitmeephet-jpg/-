@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form P1-1 | ใบเสนอซื้อ/จ้าง (3 Pages)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      padding: 32px 16px;
+      color: #1a202c;
+    }
+
+    .page-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .form-header {
+      background: #1a3a6b;
+      
+      color: white;
+      border-radius: 12px 12px 0 0;
+      padding: 28px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .form-header .title-block h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+    .form-header .title-block p { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+    .form-header .badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .form-header .badge strong { display: block; font-size: 15px; }
+
+    .progress-bar {
+      background: white;
+      display: flex;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    .progress-step {
+      flex: 1;
+      height: 6px;
+      background: #cbd5e0;
+    }
+    .progress-step.active { background: #2f855a; }
+
+    .form-body {
+      background: white;
+      border-radius: 0 0 12px 12px;
+      padding: 36px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .section { margin-bottom: 28px; }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a3a6b;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-left: 3px solid #1a3a6b;
+      padding-left: 10px;
+      margin-bottom: 16px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .col-span-2 { grid-column: span 2; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; font-weight: 600; color: #4a5568; }
+    .field-hint { font-size: 12px; color: #4a5568; margin-top: 6px; }
+    .field label .req { color: #e53e3e; margin-left: 2px; }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      color: #1a202c;
+      background: #fafbfc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: #1a3a6b;
+      box-shadow: 0 0 0 3px rgba(26,58,107,0.1);
+      background: white;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    input:disabled, textarea:disabled {
+      background: #e2e8f0;
+      color: #718096;
+      cursor: not-allowed;
+    }
+
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+    .checkbox-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px; height: 18px; margin-top: 1px;
+      accent-color: #1a3a6b; cursor: pointer; flex-shrink: 0;
+    }
+    .checkbox-item label { cursor: pointer; line-height: 1.5; }
+
+    .divider { border: none; border-top: 1.5px solid #e2e8f0; margin: 28px 0; }
+
+    .repeater-row {
+      display: grid;
+      grid-template-columns: auto 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .repeater-row .num {
+      width: 28px; height: 28px;
+      background: #ebf0f8; color: #1a3a6b;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+
+    .approval-label { font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
+
+    .review-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .review-item:last-child { border-bottom: none; }
+    .review-label { font-weight: 600; color: #4a5568; }
+    .review-value { color: #1a202c; }
+
+    .approval-buttons {
+      display: flex;
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .btn-approve {
+      flex: 1;
+      padding: 14px;
+      background: #2f855a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-approve:hover { background: #22543d; }
+
+    .btn-reject {
+      flex: 1;
+      padding: 14px;
+      background: #c53030;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reject:hover { background: #742a2a; }
+
+    .reject-reason {
+      display: none;
+      margin-top: 16px;
+    }
+    .reject-reason.show { display: block; }
+
+    .action-bar {
+      display: flex; gap: 12px; justify-content: space-between;
+      margin-top: 32px; padding-top: 24px;
+      border-top: 1.5px solid #e2e8f0;
+    }
+    .btn {
+      padding: 12px 28px; border-radius: 8px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-secondary { background: #e2e8f0; color: #4a5568; }
+    .btn-secondary:hover { background: #cbd5e0; }
+    .btn-primary { background: #1a3a6b; color: white; min-width: 160px; }
+    .btn-primary:hover { background: #153060; box-shadow: 0 4px 12px rgba(26,58,107,0.3); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .toast {
+      display: none;
+      position: fixed; bottom: 28px; right: 28px;
+      padding: 16px 24px; border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease;
+    }
+    .toast.success { background: #2f855a; color: white; display: flex; align-items: center; gap: 10px; }
+    .toast.error   { background: #c53030; color: white; display: flex; align-items: center; gap: 10px; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reject-banner {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: min(340px, calc(100% - 40px));
+      background: #fff5f5;
+      border: 1px solid #f56565;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(245,101,101,0.18);
+      padding: 16px 18px;
+      gap: 12px;
+    }
+    .reject-banner.show { display: flex; flex-direction: column; }
+    .reject-banner-text {
+      color: #9b2c2c;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .reject-banner-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .reject-banner-actions .btn {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .info-note {
+      background: #ebf8ff; border: 1px solid #bee3f8;
+      border-radius: 8px; padding: 12px 16px;
+      font-size: 13px; color: #2b6cb0; margin-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .form-body { padding: 20px; }
+      .form-header { padding: 20px; flex-direction: column; gap: 12px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .col-span-2 { grid-column: span 1; }
+      .repeater-row { grid-template-columns: auto 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="form-header">
+    <div class="title-block">
+      <h1>ใบเสนอซื้อ/จ้าง</h1>
+      <p>หน่วยงาน: กองพัฒนานักศึกษา · มหาวิทยาลัยราชภัฏกำแพงเพชร</p>
+    </div>
+    <div class="badge">
+      <span>แบบฟอร์ม</span>
+      <strong>Form P1-1</strong>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-step active" id="step1"></div>
+    <div class="progress-step" id="step2"></div>
+    <div class="progress-step" id="step3"></div>
+  </div>
+
+  <div class="reject-banner" id="reject-banner">
+    <div class="reject-banner-text">แบบฟอร์มไม่ผ่านการตรวจสอบ</div>
+    <div class="reject-banner-actions">
+      <button class="btn btn-secondary" onclick="showRejectReason()">ดูเหตุผล</button>
+      <button class="btn btn-primary" onclick="editAfterReject()">แก้ไข</button>
+    </div>
+  </div>
+
+  <div class="form-body">
+
+    <!-- ===== PAGE 1: ข้อมูลทั่วไป และ ข้อมูลผู้เสนอ ===== -->
+    <div class="page active" id="page1">
+      <div class="info-note">
+        📌 หน้า 1/3 - กรุณากรอกข้อมูลให้ครบถ้วนในหน้านี้
+      </div>
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 1 — ข้อมูลทั่วไป</div>
+        <div class="grid-2">
+          <div class="field col-span-2">
+            <label>เรื่อง ขอเสนอซื้อ/จ้าง <span class="req">*</span></label>
+            <input type="text" id="subject" placeholder="ระบุรายการที่ต้องการซื้อ/จ้าง">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 2 — ข้อมูลผู้เสนอ</div>
+        <div class="grid-2">
+          <div class="field col-span-2">
+            <label>ข้าพเจ้า (ชื่อ-สกุล) <span class="req">*</span></label>
+            <input type="text" id="requester_name" placeholder="ชื่อ-นามสกุลผู้เสนอ">
+          </div>
+          <div class="field">
+            <label>สังกัดหน่วยงาน <span class="req">*</span></label>
+            <input type="text" id="department" placeholder="ชื่อหน่วยงาน">
+          </div>
+          <div class="field">
+            <label>ตำแหน่ง</label>
+            <input type="text" id="position" placeholder="ตำแหน่งงาน">
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 3 — รายละเอียดการจัดซื้อ/จ้าง</div>
+        <div class="grid-2">
+          <div class="field col-span-2">
+            <label>มีความประสงค์จะจัดซื้อ/จ้าง <span class="req">*</span></label>
+            <input type="text" id="purchase_item" placeholder="รายการที่ต้องการจัดซื้อ/จ้าง">
+          </div>
+          <div class="field col-span-2">
+            <label>โดยมีเหตุผลในการขอซื้อ/จ้าง <span class="req">*</span></label>
+            <textarea id="purchase_reason" placeholder="อธิบายเหตุผลและความจำเป็น"></textarea>
+          </div>
+          <div class="field">
+            <label>จำนวน (รายการ) <span class="req">*</span></label>
+            <input type="number" id="quantity" placeholder="0" min="1" step="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>วงเงินที่จะจัดซื้อ/จ้าง (บาท) <span class="req">*</span></label>
+            <input type="number" id="budget" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+          </div>
+          <div class="field col-span-2">
+            <label>จำนวนเงิน (ตัวอักษร)</label>
+            <input type="text" id="budget_text" placeholder="เช่น สองพันห้าร้อยบาทถ้วน">
+          </div>
+          <div class="field col-span-2">
+            <label>รายละเอียดที่จะซื้อ/จ้าง (ตามรายละเอียดแนบท้าย)</label>
+            <textarea id="purchase_detail" placeholder="รายละเอียดเพิ่มเติม เช่น สเปค ขนาด คุณสมบัติ"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div></div>
+        <button class="btn btn-primary" onclick="nextPage(1)">ถัดไป →</button>
+      </div>
+    </div>
+
+    <!-- ===== PAGE 2: ตรวจสอบและอนุมัติ ===== -->
+    <div class="page" id="page2">
+      <div class="info-note">
+        📌 หน้า 2/3 - ตรวจสอบและอนุมัติข้อมูล
+      </div>
+
+      <div class="section">
+        <div class="section-title">ตรวจสอบข้อมูล</div>
+        <div id="review-container"></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">การอนุมัติ</div>
+        <p style="margin-bottom: 12px;">เลือกการอนุมัติสำหรับแบบฟอร์มนี้</p>
+        <div class="approval-buttons">
+          <button class="btn-approve" onclick="approveForm()">✓ อนุมัติ</button>
+          <button class="btn-reject" onclick="toggleRejectReason()">✗ ไม่อนุมัติ</button>
+        </div>
+
+        <div class="reject-reason" id="reject-reason-section">
+          <div class="field">
+            <label>เหตุผลในการไม่อนุมัติ <span class="req">*</span></label>
+            <textarea id="reject_reason" placeholder="โปรดระบุเหตุผล"></textarea>
+          </div>
+          <button class="btn-reject" onclick="rejectForm()" style="margin-top: 12px; width: 100%;">ส่งการไม่อนุมัติ</button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="prevPage(2)">← ย้อนกลับ</button>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- ===== PAGE 3: ประเภทรายจ่าย และ การดำเนินการ ===== -->
+    <div class="page" id="page3">
+      <div class="info-note">
+        📌 หน้า 3/3 - เลือกประเภทรายจ่ายและการดำเนินการ (เลือกอย่างน้อย 1 รายการในแต่ละส่วน)
+      </div>
+
+      <div class="section">
+        <div class="section-title">สรุปข้อมูลหน้า 1-2</div>
+        <div id="review-summary-page3"></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 4 — ประเภทรายจ่าย</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_asset" name="expense_type" value="ค่าวัสดุ" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_asset">ค่าวัสดุ</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_supply" name="expense_type" value="ค่าใช้สอย" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_supply">ค่าใช้สอย</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_honorarium" name="expense_type" value="ค่าครุภัณฑ์" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_honorarium">ค่าครุภัณฑ์</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_land" name="expense_type" value="ค่าที่ดินและสิ่งก่อสร้าง" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_land">ค่าที่ดินและสิ่งก่อสร้าง</label>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 5 — การดำเนินการที่เห็นควร</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_project" name="action_type" value="ให้ใช้ในโครงการ" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_project">ให้ใช้ในโครงการ</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_budget_req" name="action_type" value="รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_budget_req">รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_project_form" name="action_type" value="จัดคำขอตั้งโครงการเพื่อเสนอกองแผน" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_project_form">จัดคำขอตั้งโครงการเพื่อเสนอกองแผน ฯ กำหนดรหัสแผนงานและรหัสกองทุนตามเห็นสมควร</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_transfer" name="action_type" value="ดำเนินการโอน/เปลี่ยนแปลงหมวดเงิน" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_transfer">ดำเนินการโอน/เปลี่ยนแปลงหมวดเงินตามแบบฟอร์มและวิธีการของกองนโยบายและแผน</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="prevPage(3)">← ย้อนกลับ</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">💾 บันทึก</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw378n7eg9MK_vvJBxZIoAO3WzTt_RIjdaDPeK1oul7OEsTKXf9uhwUOA-fiviEXivnkQ/exec";
+  let formData = {};
+  let approvalStatus = null;
+
+  function singleSelectCheckbox(checkbox, groupName) {
+    if (!checkbox.checked) return;
+    document.querySelectorAll(`input[name="${groupName}"]`).forEach(el => {
+      if (el !== checkbox) el.checked = false;
+    });
+  }
+
+  function showToast(type, msg) {
+    const t = document.getElementById('toast');
+    t.className = `toast ${type}`;
+    t.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + msg;
+    t.style.display = 'flex';
+    setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+
+  function v(id) {
+    const el = document.getElementById(id);
+    return el ? el.value?.trim() || '' : '';
+  }
+
+  function getChecked(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+                .map(cb => cb.value)
+                .join(', ');
+  }
+
+  function showPage(pageNum) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page${pageNum}`).classList.add('active');
+
+    document.querySelectorAll('.progress-step').forEach((s, i) => {
+      s.classList.toggle('active', i < pageNum);
+    });
+
+    window.scrollTo(0, 0);
+
+    if (pageNum === 2) {
+      displayReview();
+    }
+    if (pageNum === 3) {
+      displaySummaryPage3();
+    }
+  }
+
+  function nextPage(pageNum) {
+    if (pageNum === 1) {
+      const required = [
+        ['subject', 'เรื่อง'],
+        ['requester_name', 'ชื่อผู้เสนอ'],
+        ['department', 'สังกัดหน่วยงาน'],
+        ['purchase_item', 'รายการจัดซื้อ/จ้าง'],
+        ['purchase_reason', 'เหตุผลในการขอซื้อ/จ้าง'],
+        ['quantity', 'จำนวน'],
+        ['budget', 'วงเงินที่จะจัดซื้อ/จ้าง']
+      ];
+
+      for (const [id, label] of required) {
+        if (!v(id)) {
+          showToast('error', `กรุณากรอก "${label}"`);
+          document.getElementById(id).focus();
+          return;
+        }
+      }
+
+      formData = {
+        subject: v('subject'),
+        requester_name: v('requester_name'),
+        department: v('department'),
+        position: v('position'),
+        purchase_item: v('purchase_item'),
+        purchase_reason: v('purchase_reason'),
+        quantity: v('quantity'),
+        budget: v('budget'),
+        budget_text: v('budget_text'),
+        purchase_detail: v('purchase_detail')
+      };
+    }
+
+    showPage(pageNum + 1);
+  }
+
+  function prevPage(pageNum) {
+    showPage(pageNum - 1);
+  }
+
+  function displayReview() {
+    const container = document.getElementById('review-container');
+    container.innerHTML = `
+      <div class="review-item">
+        <div class="review-label">เรื่อง:</div>
+        <div class="review-value">${formData.subject}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">ชื่อผู้เสนอ:</div>
+        <div class="review-value">${formData.requester_name}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">หน่วยงาน:</div>
+        <div class="review-value">${formData.department}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">ตำแหน่ง:</div>
+        <div class="review-value">${formData.position || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">รายการจัดซื้อ/จ้าง:</div>
+        <div class="review-value">${formData.purchase_item || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">เหตุผลในการขอซื้อ/จ้าง:</div>
+        <div class="review-value">${formData.purchase_reason || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">จำนวน (รายการ):</div>
+        <div class="review-value">${formData.quantity || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">วงเงิน (บาท):</div>
+        <div class="review-value">${formData.budget || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">จำนวนเงิน (ตัวอักษร):</div>
+        <div class="review-value">${formData.budget_text || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">รายละเอียดจัดซื้อ/จ้าง:</div>
+        <div class="-value">${formData.purchase_detail || '-'}</div>
+      </div>review
+    `;
+  }
+
+  function displaySummaryPage3() {
+    const container = document.getElementById('review-summary-page3');
+    container.innerHTML = `
+      <div class="review-item">
+        <div class="review-label">เรื่อง:</div>
+        <div class="review-value">${formData.subject}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">ชื่อผู้เสนอ:</div>
+        <div class="review-value">${formData.requester_name}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">หน่วยงาน:</div>
+        <div class="review-value">${formData.department}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">ตำแหน่ง:</div>
+        <div class="review-value">${formData.position || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">รายการจัดซื้อ/จ้าง:</div>
+        <div class="review-value">${formData.purchase_item || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">เหตุผลในการขอซื้อ/จ้าง:</div>
+        <div class="review-value">${formData.purchase_reason || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">จำนวน (รายการ):</div>
+        <div class="review-value">${formData.quantity || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">วงเงิน (บาท):</div>
+        <div class="review-value">${formData.budget || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">จำนวนเงิน (ตัวอักษร):</div>
+        <div class="review-value">${formData.budget_text || '-'}</div>
+      </div>
+      <div class="review-item">
+        <div class="review-label">รายละเอียดจัดซื้อ/จ้าง:</div>
+        <div class="review-value">${formData.purchase_detail || '-'}</div>
+      </div>
+    `;
+  }
+
+  function toggleRejectReason() {
+    document.getElementById('reject-reason-section').classList.toggle('show');
+    document.getElementById('reject_reason').focus();
+  }
+
+  function approveForm() {
+    approvalStatus = 'อนุมัติ';
+    hideRejectBanner();
+    showPage(3);
+  }
+
+  function rejectForm() {
+    const reason = v('reject_reason');
+    if (!reason) {
+      showToast('error', 'กรุณาระบุเหตุผลในการไม่อนุมัติ');
+      return;
+    }
+    approvalStatus = 'ไม่อนุมัติ';
+    formData.reject_reason = reason;
+    submitToSheet(true);
+  }
+
+  function filterTextOnly(input) {
+    input.value = input.value.replace(/[^ก-๙A-Za-z\s]/g, '');
+  }
+
+  function showRejectBanner() {
+    const banner = document.getElementById('reject-banner');
+    if (banner) banner.classList.add('show');
+  }
+
+  function hideRejectBanner() {
+    const banner = document.getElementById('reject-banner');
+    if (banner) banner.classList.remove('show');
+  }
+
+  function showRejectReason() {
+    const reason = formData.reject_reason || v('reject_reason') || 'ไม่ระบุเหตุผล';
+    alert(`เหตุผลไม่ผ่าน:\n${reason}`);
+  }
+
+  function editAfterReject() {
+    hideRejectBanner();
+    showPage(1);
+  }
+
+  async function submitForm() {
+    // Validate หน้า 3: ต้องเลือกอย่างน้อย 1 รายการในแต่ละส่วน
+    const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
+    const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
+
+    if (expenseChecked === 0) {
+      showToast('error', 'กรุณาเลือกประเภทรายจ่ายอย่างน้อย 1 รายการ');
+      return;
+    }
+    if (actionChecked === 0) {
+      showToast('error', 'กรุณาเลือกการดำเนินการอย่างน้อย 1 รายการ');
+      return;
+    }
+
+    const formToSubmit = {
+      ...formData,
+      expense_type: getChecked('expense_type'),
+      action_type: getChecked('action_type'),
+      timestamp: new Date().toLocaleString('th-TH')
+    };
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ กำลังส่ง...';
+
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(formToSubmit),
+        headers: { 'Content-Type': 'text/plain' },
+        mode: 'no-cors'
+      });
+      showToast('success', 'บันทึกข้อมูลสำเร็จ!');
+      setTimeout(() => {
+        resetForm();
+        showPage(1);
+      }, 1500);
+    } catch (err) {
+      showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 บันทึก';
+    }
+  }
+
+  async function submitToSheet(isRejection = false) {
+    const formToSubmit = {
+      ...formData,
+      expense_type: getChecked('expense_type'),
+      action_type: getChecked('action_type'),
+      timestamp: new Date().toLocaleString('th-TH')
+    };
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(formToSubmit),
+        headers: { 'Content-Type': 'text/plain' },
+        mode: 'no-cors'
+      });
+      showToast('success', 'บันทึกข้อมูลสำเร็จ!');
+      if (isRejection) {
+        showRejectBanner();
+        // ไม่ต้องเปลี่ยนหน้า ให้แสดง banner แทน
+      } else {
+        setTimeout(() => {
+          resetForm();
+          showPage(1);
+        }, 1500);
+      }
+    } catch (err) {
+      showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    }
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input[type="text"], input[type="number"], textarea')
+            .forEach(el => el.value = '');
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    document.getElementById('reject-reason-section').classList.remove('show');
+    formData = {};
+    approvalStatus = null;
+    hideRejectBanner();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // no-op currently
+  });
+</script>
+</body>
+</html>
