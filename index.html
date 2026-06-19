@@ -804,7 +804,26 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // no-op currently
+    // ตรวจสอบว่ามี ?page=2 ใน URL ไหม (กดจากลิงก์ไลน์)
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+
+    if (page === '2') {
+      // โหลดข้อมูลจาก URL parameter มาแสดงในหน้า 2
+      formData = {
+        subject: urlParams.get('subject') || '-',
+        requester_name: urlParams.get('name') || '-',
+        department: urlParams.get('dept') || '-',
+        position: urlParams.get('pos') || '-',
+        purchase_item: urlParams.get('item') || '-',
+        purchase_reason: urlParams.get('reason') || '-',
+        quantity: urlParams.get('qty') || '-',
+        budget: urlParams.get('budget') || '-',
+        budget_text: urlParams.get('budget_text') || '-',
+        purchase_detail: urlParams.get('detail') || '-'
+      };
+      showPage(2);
+    }
   });
 </script>
 </body>
