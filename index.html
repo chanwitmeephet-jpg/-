@@ -474,6 +474,7 @@
 
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsd1qvZuv2mJgbIXR2PihvcMxHBgtBXnbTZLatN5ruzhOL39v8JfMTFoBaI1nTAScrDg/exec';
+  const FORM_VIEW_URL = 'https://chanwitmeephet-jpg.github.io/-/';
   let formData = {};
   let approvalStatus = null;
 
@@ -575,14 +576,13 @@
     btn.disabled = true;
     btn.textContent = '⏳ กำลังส่ง...';
 
-    const currentUrl = window.location.href.split('?')[0];
     formData.token = formData.token || generateClientToken();
 
     const savePayload = {
       ...formData,
       action: 'save_page1',
       token: formData.token,
-      form_url: currentUrl
+      form_url: FORM_VIEW_URL
     };
 
     let saveSucceeded = false;
@@ -619,7 +619,7 @@
       ...formData,
       action: 'notify_line',
       token: formData.token,
-      form_url: currentUrl
+      form_url: FORM_VIEW_URL
     };
 
     try {
@@ -832,8 +832,7 @@
       return;
     }
 
-    const currentUrl = window.location.href.split('?')[0];
-    const payload = { action: 'approve', token: formData.token, form_url: currentUrl };
+    const payload = { action: 'approve', token: formData.token, form_url: FORM_VIEW_URL };
 
     try {
       const response = await fetch(SCRIPT_URL, {
