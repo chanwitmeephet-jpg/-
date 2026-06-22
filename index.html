@@ -372,8 +372,98 @@
 
       <div class="action-bar">
         <div></div>
-        <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">ส่งเข้า LINE</button>
-        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()" style="display:none;">💾 บันทึก</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">ถัดไป →</button>
+      </div>
+    </div>
+
+    <div class="page" id="page2">
+      <div class="info-note">
+        📌 หน้า 2/3 - ตรวจสอบและอนุมัติข้อมูล
+      </div>
+
+      <div class="section">
+        <div class="section-title">ตรวจสอบข้อมูล</div>
+        <div id="review-container"></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">การอนุมัติ</div>
+        <p style="margin-bottom: 12px;">กดอนุมัติ เพื่อส่งลิงก์ไปยังหน้าที่ 3</p>
+        <div class="approval-buttons">
+          <button class="btn-approve" onclick="approveForm()">✓ อนุมัติ</button>
+          <button class="btn-reject" onclick="rejectForm()">✗ ไม่อนุมัติ</button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="showPage(1)">← ย้อนกลับ</button>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="page" id="page3">
+      <div class="info-note">
+        📌 หน้า 3/3 - กรอกข้อมูลเพิ่มเติมและกดบันทึก
+      </div>
+
+      <div class="section">
+        <div class="section-title">สรุปข้อมูลจากหน้า 1</div>
+        <div id="review-summary-page3"></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 4 — ประเภทรายจ่าย</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_asset" name="expense_type" value="ค่าวัสดุ" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_asset">ค่าวัสดุ</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_supply" name="expense_type" value="ค่าใช้สอย" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_supply">ค่าใช้สอย</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_honorarium" name="expense_type" value="ค่าครุภัณฑ์" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_honorarium">ค่าครุภัณฑ์</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="exp_land" name="expense_type" value="ค่าที่ดินและสิ่งก่อสร้าง" onchange="singleSelectCheckbox(this, 'expense_type')">
+            <label for="exp_land">ค่าที่ดินและสิ่งก่อสร้าง</label>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">ส่วนที่ 5 — การดำเนินการที่เห็นควร</div>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_project" name="action_type" value="ให้ใช้ในโครงการ" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_project">ให้ใช้ในโครงการ</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_budget_req" name="action_type" value="รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_budget_req">รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_project_form" name="action_type" value="จัดคำขอตั้งโครงการเพื่อเสนอกองแผน" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_project_form">จัดคำขอตั้งโครงการเพื่อเสนอกองแผนฯ</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="act_transfer" name="action_type" value="ดำเนินการโอน/เปลี่ยนแปลงหมวดเงิน" onchange="singleSelectCheckbox(this, 'action_type')">
+            <label for="act_transfer">ดำเนินการโอน/เปลี่ยนแปลงหมวดเงิน</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="showPage(2)">← ย้อนกลับ</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">💾 บันทึก</button>
       </div>
     </div>
 
@@ -423,9 +513,11 @@
     });
 
     window.scrollTo(0, 0);
+    if (pageNum === 2) displayReview();
+    if (pageNum === 3) displaySummaryPage3();
   }
 
-  function sendNotifyLine() {
+  async function sendNotifyLine() {
     const required = [
       ['subject', 'เรื่อง'],
       ['requester_name', 'ชื่อผู้เสนอ'],
@@ -457,14 +549,35 @@
       purchase_detail: v('purchase_detail')
     };
 
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ ...formData, action: 'notify_line' }),
-      headers: { 'Content-Type': 'text/plain' },
-      mode: 'no-cors'
-    });
-
-    showToast('success', 'ส่งลิงก์ไปยัง LINE เรียบร้อยแล้ว');
+    const payload = { ...formData, action: 'notify_line' };
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        mode: 'cors'
+      });
+      const result = await response.json();
+      if (result && result.token) {
+        formData.token = result.token;
+      }
+      showToast('success', 'ส่งลิงก์ไปยัง LINE เรียบร้อยแล้ว');
+      showPage(2);
+    } catch (err) {
+      // หากเซิร์ฟเวอร์ไม่รองรับ CORS ให้ fallback ไป no-cors เพื่อให้ LINE ยังคงถูกส่ง
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload),
+          mode: 'no-cors'
+        });
+        showToast('success', 'ส่งลิงก์ไปยัง LINE เรียบร้อยแล้ว');
+        showPage(2);
+      } catch (fallbackError) {
+        showToast('error', 'ไม่สามารถส่ง LINE ได้ กรุณาลองใหม่อีกครั้ง');
+      }
+    }
   }
 
   function populateForm(data) {
@@ -496,7 +609,7 @@
   }
 
   function showRejectReason() {
-    const reason = formData.reject_reason || v('reject_reason') || 'ไม่ระบุเหตุผล';
+    const reason = formData.reject_reason || 'ไม่ระบุเหตุผล';
     alert(`เหตุผลไม่ผ่าน:\n${reason}`);
   }
 
@@ -505,23 +618,110 @@
     showPage(1);
   }
 
-  async function submitForm() {
-    formData = {
-      subject: v('subject'),
-      requester_name: v('requester_name'),
-      department: v('department'),
-      position: v('position'),
-      purchase_item: v('purchase_item'),
-      purchase_reason: v('purchase_reason'),
-      quantity: v('quantity'),
-      budget: v('budget'),
-      budget_text: v('budget_text'),
-      purchase_detail: v('purchase_detail'),
-      token: formData.token || ''
-    };
+  function buildReviewHtml(items) {
+    return items.map(([label, value]) => `
+      <div class="review-item">
+        <div class="review-label">${label}</div>
+        <div class="review-value">${value || '-'}</div>
+      </div>
+    `).join('');
+  }
 
-    const formToSubmit = {
+  function displayReview() {
+    const container = document.getElementById('review-container');
+    if (!container) return;
+
+    const items = [
+      ['เรื่อง', formData.subject],
+      ['ผู้เสนอ', formData.requester_name],
+      ['สังกัดหน่วยงาน', formData.department],
+      ['ตำแหน่ง', formData.position],
+      ['รายการจัดซื้อ/จ้าง', formData.purchase_item],
+      ['เหตุผล', formData.purchase_reason],
+      ['จำนวน', formData.quantity],
+      ['วงเงิน', formData.budget],
+      ['จำนวนเงิน (ตัวอักษร)', formData.budget_text],
+      ['รายละเอียดเพิ่มเติม', formData.purchase_detail]
+    ];
+
+    if (!formData.subject) {
+      container.innerHTML = '<p>ไม่พบข้อมูลสำหรับตรวจสอบ กรุณากดย้อนกลับไปหน้า 1</p>';
+      return;
+    }
+
+    container.innerHTML = buildReviewHtml(items);
+  }
+
+  function displaySummaryPage3() {
+    const summary = document.getElementById('review-summary-page3');
+    if (!summary) return;
+
+    const items = [
+      ['เรื่อง', formData.subject],
+      ['ผู้เสนอ', formData.requester_name],
+      ['สังกัดหน่วยงาน', formData.department],
+      ['รายการจัดซื้อ/จ้าง', formData.purchase_item],
+      ['เหตุผล', formData.purchase_reason],
+      ['จำนวน', formData.quantity],
+      ['วงเงิน', formData.budget],
+      ['ประเภทค่าใช้จ่าย', getChecked('expense_type')],
+      ['การดำเนินการที่เห็นควร', getChecked('action_type')]
+    ];
+
+    summary.innerHTML = buildReviewHtml(items);
+  }
+
+  async function approveForm() {
+    if (!formData.token) {
+      showToast('error', 'ไม่พบ token สำหรับการอนุมัติ');
+      return;
+    }
+
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve', token: formData.token }),
+        mode: 'cors'
+      });
+      const result = await response.json();
+      if (result && result.success) {
+        showToast('success', 'อนุมัติเรียบร้อยแล้ว');
+      }
+    } catch (err) {
+      // หากไม่รองรับ CORS ยังสามารถเดินหน้าต่อได้
+      showToast('success', 'อนุมัติเรียบร้อยแล้ว');
+    }
+
+    showPage(3);
+  }
+
+  function rejectForm() {
+    showRejectBanner();
+  }
+
+  async function submitForm() {
+    if (!formData.token) {
+      showToast('error', 'ไม่พบ token สำหรับการบันทึก');
+      return;
+    }
+
+    const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
+    const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
+
+    if (expenseChecked === 0) {
+      showToast('error', 'กรุณาเลือกประเภทรายจ่ายอย่างน้อย 1 รายการ');
+      return;
+    }
+    if (actionChecked === 0) {
+      showToast('error', 'กรุณาเลือกการดำเนินการอย่างน้อย 1 รายการ');
+      return;
+    }
+
+    const finalForm = {
       ...formData,
+      expense_type: getChecked('expense_type'),
+      action_type: getChecked('action_type'),
       timestamp: new Date().toLocaleString('th-TH')
     };
 
@@ -530,11 +730,11 @@
     btn.textContent = '⏳ กำลังส่ง...';
 
     try {
-      const response = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify(formToSubmit),
-        headers: { 'Content-Type': 'text/plain' },
-        mode: 'no-cors'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...finalForm, action: 'final_save', token: formData.token }),
+        mode: 'cors'
       });
       showToast('success', 'บันทึกข้อมูลสำเร็จ!');
       setTimeout(() => {
@@ -542,7 +742,22 @@
         showPage(1);
       }, 1500);
     } catch (err) {
-      showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+      // หากไม่รองรับ CORS ให้ fallback แบบ no-cors
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ ...finalForm, action: 'final_save', token: formData.token }),
+          mode: 'no-cors'
+        });
+        showToast('success', 'บันทึกข้อมูลสำเร็จ!');
+        setTimeout(() => {
+          resetForm();
+          showPage(1);
+        }, 1500);
+      } catch (fallbackError) {
+        showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+      }
     } finally {
       btn.disabled = false;
       btn.textContent = '💾 บันทึก';
@@ -553,53 +768,40 @@
     document.querySelectorAll('input[type="text"], input[type="number"], textarea')
             .forEach(el => el.value = '');
     document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
-    document.getElementById('reject-reason-section').classList.remove('show');
+    const rejectReasonSection = document.getElementById('reject-reason-section');
+    if (rejectReasonSection) rejectReasonSection.classList.remove('show');
     formData = {};
     approvalStatus = null;
     hideRejectBanner();
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    // ตรวจสอบว่ามี token หรือ ?page=2 ใน URL ไหม (กดจากลิงก์)
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const page = urlParams.get('page');
 
     if (token) {
-      // เช็ค token กับ GAS
       try {
-        const res = await fetch(`${SCRIPT_URL}?token=${encodeURIComponent(token)}`);
+        const res = await fetch(`${SCRIPT_URL}?token=${encodeURIComponent(token)}`, { mode: 'cors' });
         const result = await res.json();
 
         if (result && result.valid) {
           formData = result.formData || {};
           formData.token = token;
-            populateForm(formData);
-            document.getElementById('nextBtn').style.display = 'none';
-            document.getElementById('submitBtn').style.display = 'inline-flex';
+          populateForm(formData);
+          showPage(page === '3' ? 3 : 2);
+          return;
         }
+        showToast('error', 'ลิงก์ไม่ถูกต้องหรือหมดอายุ');
       } catch (err) {
-        // เกิดปัญหา ขอแสดงหน้าเริ่มต้นแทน
-        showPage(1);
+        showToast('error', 'ไม่สามารถตรวจสอบ token ได้ กรุณาลองใหม่อีกครั้ง');
       }
+      showPage(1);
       return;
     }
 
     if (page === '2') {
-      // ไม่ใช้ page2 อีกต่อไป ให้แสดง form หน้าเดียว
-      formData = {
-        subject: urlParams.get('subject') || '',
-        requester_name: urlParams.get('name') || '',
-        department: urlParams.get('dept') || '',
-        position: urlParams.get('pos') || '',
-        purchase_item: urlParams.get('item') || '',
-        purchase_reason: urlParams.get('reason') || '',
-        quantity: urlParams.get('qty') || '',
-        budget: urlParams.get('budget') || '',
-        budget_text: urlParams.get('budget_text') || '',
-        purchase_detail: urlParams.get('detail') || ''
-      };
-      populateForm(formData);
+      showPage(2);
     }
   });
 </script>
