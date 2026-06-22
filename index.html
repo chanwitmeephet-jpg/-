@@ -549,7 +549,8 @@
       purchase_detail: v('purchase_detail')
     };
 
-    const payload = { ...formData, action: 'notify_line' };
+    const currentUrl = window.location.href.split('?')[0];
+    const payload = { ...formData, action: 'notify_line', form_url: currentUrl };
     const btn = document.getElementById('nextBtn');
     btn.disabled = true;
     btn.textContent = '⏳ กำลังส่ง...';
@@ -605,6 +606,7 @@
       }
     }
 
+    const currentUrl = window.location.href.split('?')[0];
     const testData = {
       subject: v('subject'),
       requester_name: v('requester_name'),
@@ -617,6 +619,7 @@
       budget_text: v('budget_text'),
       purchase_detail: v('purchase_detail'),
       action: 'notify_line',
+      form_url: currentUrl,
       test: true
     };
 
