@@ -372,108 +372,8 @@
 
       <div class="action-bar">
         <div></div>
-        <button class="btn btn-primary" onclick="nextPage(1)">ถัดไป →</button>
-      </div>
-    </div>
-
-    <!-- ===== PAGE 2: ตรวจสอบและอนุมัติ ===== -->
-    <div class="page" id="page2">
-      <div class="info-note">
-        📌 หน้า 2/3 - ตรวจสอบและอนุมัติข้อมูล
-      </div>
-
-      <div class="section">
-        <div class="section-title">ตรวจสอบข้อมูล</div>
-        <div id="review-container"></div>
-      </div>
-
-      <hr class="divider">
-
-      <div class="section">
-        <div class="section-title">การอนุมัติ</div>
-        <p style="margin-bottom: 12px;">เลือกการอนุมัติสำหรับแบบฟอร์มนี้</p>
-        <div class="approval-buttons">
-          <button class="btn-approve" onclick="approveForm()">✓ อนุมัติ</button>
-          <button class="btn-reject" onclick="toggleRejectReason()">✗ ไม่อนุมัติ</button>
-        </div>
-
-        <div class="reject-reason" id="reject-reason-section">
-          <div class="field">
-            <label>เหตุผลในการไม่อนุมัติ <span class="req">*</span></label>
-            <textarea id="reject_reason" placeholder="โปรดระบุเหตุผล"></textarea>
-          </div>
-          <button class="btn-reject" onclick="rejectForm()" style="margin-top: 12px; width: 100%;">ส่งการไม่อนุมัติ</button>
-        </div>
-      </div>
-
-      <div class="action-bar">
-        <button class="btn btn-secondary" onclick="prevPage(2)">← ย้อนกลับ</button>
-        <div></div>
-      </div>
-    </div>
-
-    <!-- ===== PAGE 3: ประเภทรายจ่าย และ การดำเนินการ ===== -->
-    <div class="page" id="page3">
-      <div class="info-note">
-        📌 หน้า 3/3 - เลือกประเภทรายจ่ายและการดำเนินการ (เลือกอย่างน้อย 1 รายการในแต่ละส่วน)
-      </div>
-
-      <div class="section">
-        <div class="section-title">สรุปข้อมูลหน้า 1-2</div>
-        <div id="review-summary-page3"></div>
-      </div>
-
-      <hr class="divider">
-
-      <div class="section">
-        <div class="section-title">ส่วนที่ 4 — ประเภทรายจ่าย</div>
-        <div class="checkbox-group">
-          <div class="checkbox-item">
-            <input type="checkbox" id="exp_asset" name="expense_type" value="ค่าวัสดุ" onchange="singleSelectCheckbox(this, 'expense_type')">
-            <label for="exp_asset">ค่าวัสดุ</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="exp_supply" name="expense_type" value="ค่าใช้สอย" onchange="singleSelectCheckbox(this, 'expense_type')">
-            <label for="exp_supply">ค่าใช้สอย</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="exp_honorarium" name="expense_type" value="ค่าครุภัณฑ์" onchange="singleSelectCheckbox(this, 'expense_type')">
-            <label for="exp_honorarium">ค่าครุภัณฑ์</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="exp_land" name="expense_type" value="ค่าที่ดินและสิ่งก่อสร้าง" onchange="singleSelectCheckbox(this, 'expense_type')">
-            <label for="exp_land">ค่าที่ดินและสิ่งก่อสร้าง</label>
-          </div>
-        </div>
-      </div>
-
-      <hr class="divider">
-
-      <div class="section">
-        <div class="section-title">ส่วนที่ 5 — การดำเนินการที่เห็นควร</div>
-        <div class="checkbox-group">
-          <div class="checkbox-item">
-            <input type="checkbox" id="act_project" name="action_type" value="ให้ใช้ในโครงการ" onchange="singleSelectCheckbox(this, 'action_type')">
-            <label for="act_project">ให้ใช้ในโครงการ</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="act_budget_req" name="action_type" value="รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป" onchange="singleSelectCheckbox(this, 'action_type')">
-            <label for="act_budget_req">รวบรวมเพื่อดำเนินการจัดหาด้วยวิธีตกลงราคาต่อไป</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="act_project_form" name="action_type" value="จัดคำขอตั้งโครงการเพื่อเสนอกองแผน" onchange="singleSelectCheckbox(this, 'action_type')">
-            <label for="act_project_form">จัดคำขอตั้งโครงการเพื่อเสนอกองแผน ฯ กำหนดรหัสแผนงานและรหัสกองทุนตามเห็นสมควร</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="act_transfer" name="action_type" value="ดำเนินการโอน/เปลี่ยนแปลงหมวดเงิน" onchange="singleSelectCheckbox(this, 'action_type')">
-            <label for="act_transfer">ดำเนินการโอน/เปลี่ยนแปลงหมวดเงินตามแบบฟอร์มและวิธีการของกองนโยบายและแผน</label>
-          </div>
-        </div>
-      </div>
-
-      <div class="action-bar">
-        <button class="btn btn-secondary" onclick="prevPage(3)">← ย้อนกลับ</button>
-        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">💾 บันทึก</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">ส่งเข้า LINE</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()" style="display:none;">💾 บันทึก</button>
       </div>
     </div>
 
@@ -515,182 +415,70 @@
 
   function showPage(pageNum) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(`page${pageNum}`).classList.add('active');
+    const page = document.getElementById(`page${pageNum}`);
+    if (page) page.classList.add('active');
 
     document.querySelectorAll('.progress-step').forEach((s, i) => {
       s.classList.toggle('active', i < pageNum);
     });
 
     window.scrollTo(0, 0);
-
-    if (pageNum === 2) {
-      displayReview();
-    }
-    if (pageNum === 3) {
-      displaySummaryPage3();
-    }
   }
 
-  function nextPage(pageNum) {
-    if (pageNum === 1) {
-      const required = [
-        ['subject', 'เรื่อง'],
-        ['requester_name', 'ชื่อผู้เสนอ'],
-        ['department', 'สังกัดหน่วยงาน'],
-        ['purchase_item', 'รายการจัดซื้อ/จ้าง'],
-        ['purchase_reason', 'เหตุผลในการขอซื้อ/จ้าง'],
-        ['quantity', 'จำนวน'],
-        ['budget', 'วงเงินที่จะจัดซื้อ/จ้าง']
-      ];
+  function sendNotifyLine() {
+    const required = [
+      ['subject', 'เรื่อง'],
+      ['requester_name', 'ชื่อผู้เสนอ'],
+      ['department', 'สังกัดหน่วยงาน'],
+      ['purchase_item', 'รายการจัดซื้อ/จ้าง'],
+      ['purchase_reason', 'เหตุผลในการขอซื้อ/จ้าง'],
+      ['quantity', 'จำนวน'],
+      ['budget', 'วงเงินที่จะจัดซื้อ/จ้าง']
+    ];
 
-      for (const [id, label] of required) {
-        if (!v(id)) {
-          showToast('error', `กรุณากรอก "${label}"`);
-          document.getElementById(id).focus();
-          return;
-        }
+    for (const [id, label] of required) {
+      if (!v(id)) {
+        showToast('error', `กรุณากรอก "${label}"`);
+        document.getElementById(id).focus();
+        return;
       }
-
-      formData = {
-        subject: v('subject'),
-        requester_name: v('requester_name'),
-        department: v('department'),
-        position: v('position'),
-        purchase_item: v('purchase_item'),
-        purchase_reason: v('purchase_reason'),
-        quantity: v('quantity'),
-        budget: v('budget'),
-        budget_text: v('budget_text'),
-        purchase_detail: v('purchase_detail')
-      };
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ ...formData, action: 'notify_line' }),
-        headers: { 'Content-Type': 'text/plain' },
-        mode: 'no-cors'
-      });
     }
 
-    showPage(pageNum + 1);
+    formData = {
+      subject: v('subject'),
+      requester_name: v('requester_name'),
+      department: v('department'),
+      position: v('position'),
+      purchase_item: v('purchase_item'),
+      purchase_reason: v('purchase_reason'),
+      quantity: v('quantity'),
+      budget: v('budget'),
+      budget_text: v('budget_text'),
+      purchase_detail: v('purchase_detail')
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ ...formData, action: 'notify_line' }),
+      headers: { 'Content-Type': 'text/plain' },
+      mode: 'no-cors'
+    });
+
+    showToast('success', 'ส่งลิงก์ไปยัง LINE เรียบร้อยแล้ว');
   }
 
-  function prevPage(pageNum) {
-    showPage(pageNum - 1);
-  }
-
-  function displayReview() {
-    const container = document.getElementById('review-container');
-    container.innerHTML = `
-      <div class="review-item">
-        <div class="review-label">เรื่อง:</div>
-        <div class="review-value">${formData.subject}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">ชื่อผู้เสนอ:</div>
-        <div class="review-value">${formData.requester_name}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">หน่วยงาน:</div>
-        <div class="review-value">${formData.department}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">ตำแหน่ง:</div>
-        <div class="review-value">${formData.position || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">รายการจัดซื้อ/จ้าง:</div>
-        <div class="review-value">${formData.purchase_item || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">เหตุผลในการขอซื้อ/จ้าง:</div>
-        <div class="review-value">${formData.purchase_reason || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">จำนวน (รายการ):</div>
-        <div class="review-value">${formData.quantity || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">วงเงิน (บาท):</div>
-        <div class="review-value">${formData.budget || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">จำนวนเงิน (ตัวอักษร):</div>
-        <div class="review-value">${formData.budget_text || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">รายละเอียดจัดซื้อ/จ้าง:</div>
-        <div class="-value">${formData.purchase_detail || '-'}</div>
-      </div>review
-    `;
-  }
-
-  function displaySummaryPage3() {
-    const container = document.getElementById('review-summary-page3');
-    container.innerHTML = `
-      <div class="review-item">
-        <div class="review-label">เรื่อง:</div>
-        <div class="review-value">${formData.subject}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">ชื่อผู้เสนอ:</div>
-        <div class="review-value">${formData.requester_name}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">หน่วยงาน:</div>
-        <div class="review-value">${formData.department}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">ตำแหน่ง:</div>
-        <div class="review-value">${formData.position || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">รายการจัดซื้อ/จ้าง:</div>
-        <div class="review-value">${formData.purchase_item || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">เหตุผลในการขอซื้อ/จ้าง:</div>
-        <div class="review-value">${formData.purchase_reason || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">จำนวน (รายการ):</div>
-        <div class="review-value">${formData.quantity || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">วงเงิน (บาท):</div>
-        <div class="review-value">${formData.budget || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">จำนวนเงิน (ตัวอักษร):</div>
-        <div class="review-value">${formData.budget_text || '-'}</div>
-      </div>
-      <div class="review-item">
-        <div class="review-label">รายละเอียดจัดซื้อ/จ้าง:</div>
-        <div class="review-value">${formData.purchase_detail || '-'}</div>
-      </div>
-    `;
-  }
-
-  function toggleRejectReason() {
-    document.getElementById('reject-reason-section').classList.toggle('show');
-    document.getElementById('reject_reason').focus();
-  }
-
-  function approveForm() {
-    approvalStatus = 'อนุมัติ';
-    hideRejectBanner();
-    showPage(3);
-  }
-
-  function rejectForm() {
-    const reason = v('reject_reason');
-    if (!reason) {
-      showToast('error', 'กรุณาระบุเหตุผลในการไม่อนุมัติ');
-      return;
-    }
-    approvalStatus = 'ไม่อนุมัติ';
-    formData.reject_reason = reason;
-    submitForm();
+  function populateForm(data) {
+    if (!data || typeof data !== 'object') return;
+    document.getElementById('subject').value = data.subject || '';
+    document.getElementById('requester_name').value = data.requester_name || '';
+    document.getElementById('department').value = data.department || '';
+    document.getElementById('position').value = data.position || '';
+    document.getElementById('purchase_item').value = data.purchase_item || '';
+    document.getElementById('purchase_reason').value = data.purchase_reason || '';
+    document.getElementById('quantity').value = data.quantity || '';
+    document.getElementById('budget').value = data.budget || '';
+    document.getElementById('budget_text').value = data.budget_text || '';
+    document.getElementById('purchase_detail').value = data.purchase_detail || '';
   }
 
   function filterTextOnly(input) {
@@ -718,23 +506,22 @@
   }
 
   async function submitForm() {
-    // Validate หน้า 3: ต้องเลือกอย่างน้อย 1 รายการในแต่ละส่วน
-    const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
-    const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
-
-    if (expenseChecked === 0) {
-      showToast('error', 'กรุณาเลือกประเภทรายจ่ายอย่างน้อย 1 รายการ');
-      return;
-    }
-    if (actionChecked === 0) {
-      showToast('error', 'กรุณาเลือกการดำเนินการอย่างน้อย 1 รายการ');
-      return;
-    }
+    formData = {
+      subject: v('subject'),
+      requester_name: v('requester_name'),
+      department: v('department'),
+      position: v('position'),
+      purchase_item: v('purchase_item'),
+      purchase_reason: v('purchase_reason'),
+      quantity: v('quantity'),
+      budget: v('budget'),
+      budget_text: v('budget_text'),
+      purchase_detail: v('purchase_detail'),
+      token: formData.token || ''
+    };
 
     const formToSubmit = {
       ...formData,
-      expense_type: getChecked('expense_type'),
-      action_type: getChecked('action_type'),
       timestamp: new Date().toLocaleString('th-TH')
     };
 
@@ -787,16 +574,9 @@
         if (result && result.valid) {
           formData = result.formData || {};
           formData.token = token;
-          showPage(2);
-        } else {
-          document.body.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Sarabun,sans-serif;">
-            <div style="text-align:center;padding:40px;">
-              <div style="font-size:60px;">🔒</div>
-              <h2 style="color:#c53030;margin:16px 0;">ไม่มีสิทธิ์เข้าถึง</h2>
-              <p style="color:#718096;">${result && result.reason === 'used' ? 'ลิงก์นี้ถูกใช้งานแล้ว' : 'ลิงก์ไม่ถูกต้องหรือหมดอายุ'}</p>
-            </div>
-          </div>`;
+            populateForm(formData);
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'inline-flex';
         }
       } catch (err) {
         // เกิดปัญหา ขอแสดงหน้าเริ่มต้นแทน
@@ -806,20 +586,20 @@
     }
 
     if (page === '2') {
-      // โหลดข้อมูลจาก URL parameter มาแสดงในหน้า 2
+      // ไม่ใช้ page2 อีกต่อไป ให้แสดง form หน้าเดียว
       formData = {
-        subject: urlParams.get('subject') || '-',
-        requester_name: urlParams.get('name') || '-',
-        department: urlParams.get('dept') || '-',
-        position: urlParams.get('pos') || '-',
-        purchase_item: urlParams.get('item') || '-',
-        purchase_reason: urlParams.get('reason') || '-',
-        quantity: urlParams.get('qty') || '-',
-        budget: urlParams.get('budget') || '-',
-        budget_text: urlParams.get('budget_text') || '-',
-        purchase_detail: urlParams.get('detail') || '-'
+        subject: urlParams.get('subject') || '',
+        requester_name: urlParams.get('name') || '',
+        department: urlParams.get('dept') || '',
+        position: urlParams.get('pos') || '',
+        purchase_item: urlParams.get('item') || '',
+        purchase_reason: urlParams.get('reason') || '',
+        quantity: urlParams.get('qty') || '',
+        budget: urlParams.get('budget') || '',
+        budget_text: urlParams.get('budget_text') || '',
+        purchase_detail: urlParams.get('detail') || ''
       };
-      showPage(2);
+      populateForm(formData);
     }
   });
 </script>
