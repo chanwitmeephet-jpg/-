@@ -473,7 +473,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const SCRIPT_URL = window.location.href.split('?')[0];
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsd1qvZuv2mJgbIXR2PihvcMxHBgtBXnbTZLatN5ruzhOL39v8JfMTFoBaI1nTAScrDg/exec';
   let formData = {};
   let approvalStatus = null;
 
@@ -833,23 +833,35 @@
     }
 
     const currentUrl = window.location.href.split('?')[0];
+    const payload = { action: 'approve', token: formData.token, form_url: currentUrl };
 
     try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve', token: formData.token, form_url: currentUrl }),
+        body: JSON.stringify(payload),
         mode: 'cors'
       });
       const result = await response.json();
       if (result && result.success) {
         showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
-      } else {
-        showToast('error', 'ไม่สามารถอนุมัติได้ โปรดลองใหม่อีกครั้ง');
+        return;
       }
+      showToast('error', 'ไม่สามารถอนุมัติได้ โปรดลองใหม่อีกครั้ง');
     } catch (err) {
-      console.log('approveForm error:', err);
-      showToast('success', 'อนุมัติแล้ว แต่ส่ง LINE อาจไม่สำเร็จ');
+      console.warn('approveForm cors failed, trying no-cors fallback:', err);
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload),
+          mode: 'no-cors'
+        });
+        showToast('success', 'อนุมัติแล้ว แต่ระบบไม่สามารถตรวจสอบผลได้จากหน้าเว็บ');
+      } catch (fallbackError) {
+        console.error('approveForm no-cors fallback failed:', fallbackError);
+        showToast('error', 'ไม่สามารถอนุมัติได้ กรุณาลองใหม่อีกครั้ง');
+      }
     }
   }
 
