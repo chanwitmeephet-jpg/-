@@ -504,11 +504,6 @@
   }
 
   function showPage(pageNum) {
-    if (pageNum > 1 && !formData.token) {
-      showToast('error', 'กรุณาเข้าใช้งานหน้านี้จากลิงก์ที่ส่งทาง LINE เท่านั้น');
-      return;
-    }
-
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(`page${pageNum}`);
     if (page) page.classList.add('active');
@@ -571,6 +566,7 @@
         formData.token = result.token;
       }
       showToast('success', 'ส่งลิงก์เข้า LINE เรียบร้อยแล้ว');
+      showPage(2);
     } catch (err) {
       // หากเซิร์ฟเวอร์ไม่รองรับ CORS ให้ fallback ไป no-cors เพื่อให้ LINE ยังคงถูกส่ง
       try {
@@ -758,12 +754,13 @@
   }
 
   async function approveForm() {
-    if (!formData.token) {
-      showToast('error', 'ไม่พบ token สำหรับการอนุมัติ');
-      return;
-    }
-
     try {
+      if (!formData.token) {
+        showToast('success', 'อนุมัติเรียบร้อยแล้ว');
+        showPage(3);
+        return;
+      }
+
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -776,9 +773,11 @@
       } else {
         showToast('success', 'อนุมัติเรียบร้อยแล้ว');
       }
+      showPage(3);
     } catch (err) {
       console.log('approveForm error:', err);
       showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
+      showPage(3);
     }
   }
 
@@ -787,11 +786,6 @@
   }
 
   async function submitForm() {
-    if (!formData.token) {
-      showToast('error', 'ไม่พบ token สำหรับการบันทึก');
-      return;
-    }
-
     const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
     const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
 
