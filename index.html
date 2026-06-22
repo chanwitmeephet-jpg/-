@@ -624,6 +624,9 @@
       test: true
     };
 
+    console.log('📤 ส่งข้อมูลไป GAS:', testData);
+    console.log('📍 GAS URL:', SCRIPT_URL);
+
     const btn = document.querySelector('.action-bar .btn-secondary');
     if (btn) {
       btn.disabled = true;
@@ -631,14 +634,17 @@
     }
 
     try {
-      await fetch(SCRIPT_URL, {
+      const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData),
         mode: 'cors'
       });
-      showToast('success', 'ทดสอบแจ้งเตือน LINE สำเร็จ');
+      const result = await response.json();
+      console.log('✅ ตอบกลับจาก GAS:', result);
+      showToast('success', 'ส่งแล้ว ตรวจสอบ LINE และ F12 Console');
     } catch (err) {
+      console.log('⚠️ CORS error, ลองใหม่แบบ no-cors:', err);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -646,9 +652,11 @@
           body: JSON.stringify(testData),
           mode: 'no-cors'
         });
-        showToast('success', 'ทดสอบแจ้งเตือน LINE สำเร็จ');
+        console.log('✅ ส่งผ่าน no-cors สำเร็จ');
+        showToast('success', 'ส่งแล้ว ตรวจสอบ LINE และ GAS Logs');
       } catch (fallbackError) {
-        showToast('error', 'ไม่สามารถทดสอบแจ้งเตือน LINE ได้');
+        console.error('❌ ไม่สามารถส่งได้:', fallbackError);
+        showToast('error', 'ไม่สามารถส่ง LINE ได้ ตรวจสอบ console');
       }
     } finally {
       if (btn) {
