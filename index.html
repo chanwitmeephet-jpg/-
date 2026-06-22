@@ -371,7 +371,7 @@
       </div>
 
       <div class="action-bar">
-        <div></div>
+        <button class="btn btn-secondary" onclick="sendNotifyLineTest()">ทดสอบแจ้งเตือน LINE</button>
         <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">ถัดไป →</button>
       </div>
     </div>
@@ -587,6 +587,74 @@
     } finally {
       btn.disabled = false;
       btn.textContent = 'ถัดไป →';
+    }
+  }
+
+  async function sendNotifyLineTest() {
+    const required = [
+      ['subject', 'เรื่อง'],
+      ['requester_name', 'ชื่อผู้เสนอ'],
+      ['department', 'สังกัดหน่วยงาน'],
+      ['purchase_item', 'รายการจัดซื้อ/จ้าง'],
+      ['purchase_reason', 'เหตุผลในการขอซื้อ/จ้าง'],
+      ['quantity', 'จำนวน'],
+      ['budget', 'วงเงินที่จะจัดซื้อ/จ้าง']
+    ];
+
+    for (const [id, label] of required) {
+      if (!v(id)) {
+        showToast('error', `กรุณากรอก "${label}"`);
+        document.getElementById(id).focus();
+        return;
+      }
+    }
+
+    const testData = {
+      subject: v('subject'),
+      requester_name: v('requester_name'),
+      department: v('department'),
+      position: v('position'),
+      purchase_item: v('purchase_item'),
+      purchase_reason: v('purchase_reason'),
+      quantity: v('quantity'),
+      budget: v('budget'),
+      budget_text: v('budget_text'),
+      purchase_detail: v('purchase_detail'),
+      action: 'notify_line',
+      test: true
+    };
+
+    const btn = document.querySelector('.action-bar .btn-secondary');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ กำลังส่ง...';
+    }
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testData),
+        mode: 'cors'
+      });
+      showToast('success', 'ทดสอบแจ้งเตือน LINE สำเร็จ');
+    } catch (err) {
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(testData),
+          mode: 'no-cors'
+        });
+        showToast('success', 'ทดสอบแจ้งเตือน LINE สำเร็จ');
+      } catch (fallbackError) {
+        showToast('error', 'ไม่สามารถทดสอบแจ้งเตือน LINE ได้');
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'ทดสอบแจ้งเตือน LINE';
+      }
     }
   }
 
