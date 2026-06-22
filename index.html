@@ -522,14 +522,14 @@
     if (pageNum === 3) displaySummaryPage3();
   }
 
-  async function savePage1Data() {
-    const currentUrl = window.location.href.split('?')[0];
-    const payload = {
-      ...formData,
-      action: 'save_page1',
-      form_url: currentUrl
-    };
+  function generateClientToken() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return window.crypto.randomUUID();
+    }
+    return 'token-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+  }
 
+  async function savePage1Data(payload) {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -576,63 +576,86 @@
     btn.textContent = '⏳ กำลังส่ง...';
 
     const currentUrl = window.location.href.split('?')[0];
+    formData.token = formData.token || generateClientToken();
+
     const savePayload = {
       ...formData,
       action: 'save_page1',
+      token: formData.token,
       form_url: currentUrl
     };
 
+    let saveSucceeded = false;
     try {
-      const saveResult = await savePage1Data();
+      const saveResult = await savePage1Data(savePayload);
       if (saveResult && saveResult.token) {
         formData.token = saveResult.token;
       }
+      saveSucceeded = true;
       showToast('success', 'ข้อมูลหน้า 1 ถูกบันทึกแล้ว');
-
-      try {
-        const notifyPayload = {
-          ...formData,
-          action: 'notify_line',
-          token: formData.token,
-          form_url: currentUrl
-        };
-
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notifyPayload),
-          mode: 'cors'
-        });
-        const result = await response.json();
-
-        if (result && result.result === 'success') {
-          showToast('success', 'ส่งลิงก์เข้า LINE เรียบร้อยแล้ว');
-        } else {
-          console.warn('LINE notify response error', result);
-          showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
-        }
-      } catch (notifyError) {
-        console.warn('LINE notify failed, data already saved:', notifyError);
-        showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
-      }
     } catch (err) {
+      console.warn('save_page1 cors failed, trying no-cors fallback:', err);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(savePayload),
           mode: 'no-cors'
         });
-        showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถตรวจสอบผลทางหน้าเว็บได้');
+        saveSucceeded = true;
+        showToast('success', 'ข้อมูลหน้า 1 ถูกบันทึกแล้ว แต่ไม่สามารถตรวจสอบผลทางหน้าเว็บได้');
       } catch (fallbackError) {
         console.error('save_page1 fallback failed:', fallbackError);
         showToast('error', 'ไม่สามารถบันทึกข้อมูลหน้า 1 ได้ กรุณาลองใหม่');
       }
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'ถัดไป →';
     }
+
+    if (!saveSucceeded) {
+      btn.disabled = false;
+      btn.textContent = 'ขอยื่นอนุมัติ';
+      return;
+    }
+
+    const notifyPayload = {
+      ...formData,
+      action: 'notify_line',
+      token: formData.token,
+      form_url: currentUrl
+    };
+
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(notifyPayload),
+        mode: 'cors'
+      });
+      const result = await response.json();
+
+      if (result && result.result === 'success') {
+        showToast('success', 'ส่งลิงก์เข้า LINE เรียบร้อยแล้ว');
+      } else {
+        console.warn('LINE notify response error', result);
+        showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
+      }
+    } catch (notifyError) {
+      console.warn('LINE notify cors failed, trying no-cors fallback:', notifyError);
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(notifyPayload),
+          mode: 'no-cors'
+        });
+        showToast('success', 'ส่งคำขอ LINE แล้ว (no-cors fallback)');
+      } catch (fallbackNotifyError) {
+        console.error('LINE notify fallback failed:', fallbackNotifyError);
+        showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
+      }
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'ขอยื่นอนุมัติ';
   }
+  
 
   async function sendNotifyLineTest() {
     const required = [
