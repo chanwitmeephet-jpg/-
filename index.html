@@ -372,7 +372,7 @@
 
       <div class="action-bar">
         <button class="btn btn-secondary" onclick="sendNotifyLineTest()">ทดสอบแจ้งเตือน LINE</button>
-        <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">ถัดไป →</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="sendNotifyLine()">บันทึกและส่ง LINE</button>
       </div>
     </div>
 
@@ -504,6 +504,11 @@
   }
 
   function showPage(pageNum) {
+    if (pageNum > 1 && !formData.token) {
+      showToast('error', 'หน้านี้อนุญาตให้เข้าได้เฉพาะจากลิงก์ที่ส่งใน LINE เท่านั้น');
+      return;
+    }
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(`page${pageNum}`);
     if (page) page.classList.add('active');
@@ -592,19 +597,24 @@
           form_url: currentUrl
         };
 
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(notifyPayload),
           mode: 'cors'
         });
-        showToast('success', 'ส่ง LINE notify เรียบร้อยแล้ว');
+        const result = await response.json();
+
+        if (result && result.result === 'success') {
+          showToast('success', 'ส่งลิงก์เข้า LINE เรียบร้อยแล้ว');
+        } else {
+          console.warn('LINE notify response error', result);
+          showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
+        }
       } catch (notifyError) {
         console.warn('LINE notify failed, data already saved:', notifyError);
         showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
       }
-
-      showPage(2);
     } catch (err) {
       try {
         await fetch(SCRIPT_URL, {
@@ -614,7 +624,6 @@
           mode: 'no-cors'
         });
         showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถตรวจสอบผลทางหน้าเว็บได้');
-        showPage(2);
       } catch (fallbackError) {
         console.error('save_page1 fallback failed:', fallbackError);
         showToast('error', 'ไม่สามารถบันทึกข้อมูลหน้า 1 ได้ กรุณาลองใหม่');
@@ -795,30 +804,29 @@
   }
 
   async function approveForm() {
-    try {
-      if (!formData.token) {
-        showToast('success', 'อนุมัติเรียบร้อยแล้ว');
-        showPage(3);
-        return;
-      }
+    if (!formData.token) {
+      showToast('error', 'ไม่พบ token สำหรับการอนุมัติ กรุณาเข้าโดยลิงก์ที่ส่งใน LINE เท่านั้น');
+      return;
+    }
 
+    const currentUrl = window.location.href.split('?')[0];
+
+    try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve', token: formData.token }),
+        body: JSON.stringify({ action: 'approve', token: formData.token, form_url: currentUrl }),
         mode: 'cors'
       });
       const result = await response.json();
       if (result && result.success) {
         showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
       } else {
-        showToast('success', 'อนุมัติเรียบร้อยแล้ว');
+        showToast('error', 'ไม่สามารถอนุมัติได้ โปรดลองใหม่อีกครั้ง');
       }
-      showPage(3);
     } catch (err) {
       console.log('approveForm error:', err);
-      showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
-      showPage(3);
+      showToast('success', 'อนุมัติแล้ว แต่ส่ง LINE อาจไม่สำเร็จ');
     }
   }
 
@@ -827,6 +835,11 @@
   }
 
   async function submitForm() {
+    if (!formData.token) {
+      showToast('error', 'ไม่พบ token สำหรับการบันทึก กรุณาเข้าโดยลิงก์หน้านี้จาก LINE เท่านั้น');
+      return;
+    }
+
     const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
     const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
 
@@ -921,6 +934,8 @@
       return;
     }
 
+    // ไม่มี token เลย ให้แสดงหน้า 1 เท่านั้น
+    showPage(1);
   });
 </script>
 </body>
