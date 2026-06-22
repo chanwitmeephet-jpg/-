@@ -949,8 +949,8 @@
 
     if (token) {
       try {
-        const res = await fetch(`${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}&page=${encodeURIComponent(page || '')}`, { mode: 'cors' });
-        const result = await res.json();
+        const url = `${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}&page=${encodeURIComponent(page || '')}`;
+        const result = await jsonpRequest(url);
 
         if (result && result.valid) {
           formData = result.formData || {};
