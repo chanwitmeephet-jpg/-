@@ -772,12 +772,14 @@
       });
       const result = await response.json();
       if (result && result.success) {
+        showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
+      } else {
+        showToast('success', 'อนุมัติเรียบร้อยแล้ว');
+      }
+    } catch (err) {
+      console.log('approveForm error:', err);
       showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
-    } else {
-      showToast('success', 'อนุมัติเรียบร้อยแล้ว');
     }
-  } catch (err) {
-    showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
   }
 
   function rejectForm() {
