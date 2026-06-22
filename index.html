@@ -763,14 +763,6 @@
     }
   }
 
-  async function submitToSheet(isRejection = false) {
-    const formToSubmit = {
-      ...formData,
-      expense_type: getChecked('expense_type'),
-      action_type: getChecked('action_type'),
-      timestamp: new Date().toLocaleString('th-TH')
-    };
-
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
