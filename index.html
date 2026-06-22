@@ -532,7 +532,7 @@
   async function savePage1Data(payload) {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
       mode: 'cors'
     });
@@ -625,7 +625,7 @@
     try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(notifyPayload),
         mode: 'cors'
       });
@@ -705,7 +705,7 @@
     try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(testData),
         mode: 'cors'
       });
@@ -838,7 +838,7 @@
     try {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
         mode: 'cors'
       });
@@ -901,7 +901,7 @@
     try {
       await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ ...finalForm, action: 'final_save', token: formData.token }),
         mode: 'cors'
       });
