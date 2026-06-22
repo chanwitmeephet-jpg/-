@@ -797,10 +797,38 @@
     hideRejectBanner();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    // ตรวจสอบว่ามี ?page=2 ใน URL ไหม (กดจากลิงก์ไลน์)
+  document.addEventListener('DOMContentLoaded', async () => {
+    // ตรวจสอบว่ามี token หรือ ?page=2 ใน URL ไหม (กดจากลิงก์)
     const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
     const page = urlParams.get('page');
+
+    if (token) {
+      // เช็ค token กับ GAS
+      try {
+        const res = await fetch(`${SCRIPT_URL}?token=${encodeURIComponent(token)}`);
+        const result = await res.json();
+
+        if (result && result.valid) {
+          formData = result.formData || {};
+          formData.token = token;
+          showPage(2);
+        } else {
+          document.body.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Sarabun,sans-serif;">
+            <div style="text-align:center;padding:40px;">
+              <div style="font-size:60px;">🔒</div>
+              <h2 style="color:#c53030;margin:16px 0;">ไม่มีสิทธิ์เข้าถึง</h2>
+              <p style="color:#718096;">${result && result.reason === 'used' ? 'ลิงก์นี้ถูกใช้งานแล้ว' : 'ลิงก์ไม่ถูกต้องหรือหมดอายุ'}</p>
+            </div>
+          </div>`;
+        }
+      } catch (err) {
+        // เกิดปัญหา ขอแสดงหน้าเริ่มต้นแทน
+        showPage(1);
+      }
+      return;
+    }
 
     if (page === '2') {
       // โหลดข้อมูลจาก URL parameter มาแสดงในหน้า 2
