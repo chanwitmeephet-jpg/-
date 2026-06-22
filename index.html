@@ -676,7 +676,6 @@
       }
     }
 
-    const currentUrl = window.location.href.split('?')[0];
     const testData = {
       subject: v('subject'),
       requester_name: v('requester_name'),
@@ -689,7 +688,7 @@
       budget_text: v('budget_text'),
       purchase_detail: v('purchase_detail'),
       action: 'notify_line',
-      form_url: currentUrl,
+      form_url: FORM_VIEW_URL,
       test: true
     };
 
