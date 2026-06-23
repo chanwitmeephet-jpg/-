@@ -163,25 +163,43 @@
         return;
       }
       document.getElementById('tokenValue').textContent = token;
-      const result = await postAction({ action: 'check_token', token });
-      if (!result) {
-        setError('ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง');
-        return;
-      }
-      if (!result.valid) {
-        const reason = result.reason || 'unknown';
-        const message = reason === 'not_found'
-          ? 'Token ไม่พบในระบบ' : reason === 'used'
-          ? 'Token นี้ถูกใช้งานแล้ว' : reason === 'parse_error'
-          ? 'ข้อมูล token เสียหาย' : `Token ไม่ถูกต้อง: ${reason}`;
-        setError(message);
+      try {
+        const url = `${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}`;
+        console.log('Fetching:', url);
+        const res = await fetch(url);
+        console.log('Response status:', res.status, res.statusText);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const text = await res.text();
+        console.log('Response text:', text);
+        const result = JSON.parse(text);
+        console.log('Parsed result:', result);
+        
+        if (!result) {
+          setError('ไม่สามารถโหลดข้อมูลได้ - ไม่มี response');
+          return;
+        }
+        if (!result.valid) {
+          const reason = result.reason || 'unknown';
+          const message = reason === 'not_found'
+            ? 'Token ไม่พบในระบบ' : reason === 'used'
+            ? 'Token นี้ถูกใช้งานแล้ว' : reason === 'parse_error'
+            ? 'ข้อมูล token เสียหาย' : `Token ไม่ถูกต้อง: ${reason}`;
+          setError(message);
+          document.getElementById('approveBtn').disabled = true;
+          document.getElementById('rejectBtn').disabled = true;
+          return;
+        }
+        document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
+        document.getElementById('messageBox').textContent = `Token ผ่านการตรวจสอบแล้ว (สถานะ: ${result.status || 'unknown'})`;
+        renderReview(result.formData);
+      } catch (err) {
+        console.error('loadToken error:', err);
+        setError(`เกิดข้อผิดพลาด: ${err.message}`);
         document.getElementById('approveBtn').disabled = true;
         document.getElementById('rejectBtn').disabled = true;
-        return;
       }
-      document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
-      document.getElementById('messageBox').textContent = `Token ผ่านการตรวจสอบแล้ว (สถานะ: ${result.status || 'unknown'})`;
-      renderReview(result.formData);
     }
 
     async function testToken() {
