@@ -246,8 +246,11 @@
         showToast(message, 'error');
         return;
       }
-      showToast('อนุมัติเรียบร้อย ส่งลิงก์หน้าที่ 3 ไป LINE แล้ว', 'success');
+      showToast('อนุมัติเรียบร้อย กำลังเปิดหน้าที่ 3...', 'success');
       document.getElementById('statusBadge').textContent = 'approved';
+      setTimeout(() => {
+        window.location.href = `${FORM_URL}complete.html?token=${encodeURIComponent(token)}&page=3`;
+      }, 1500);
     }
 
     async function saveAndNotify() {
@@ -267,7 +270,12 @@
 
     async function rejectRequest() {
       if (!confirm('คุณแน่ใจหรือว่าต้องการไม่อนุมัติ?')) return;
-      showToast('ไม่อนุมัติแล้ว', 'warning');
+      const response = await postAction({ action: 'reject', token, rejection_reason: 'ไม่อนุมัติโดยผู้อนุมัติ' });
+      if (!response) {
+        showToast('ไม่สามารถบันทึกการไม่อนุมัติได้', 'error');
+        return;
+      }
+      showToast('ไม่อนุมัติแล้ว และบันทึกไว้แล้ว', 'warning');
       setTimeout(() => { window.location.href = 'index.html'; }, 1500);
     }
 
