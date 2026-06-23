@@ -168,8 +168,7 @@
 
     async function verifyToken() {
       if (!token) {
-        showToast('ไม่พบ token ใน URL', 'error');
-        document.getElementById('saveBtn').disabled = true;
+        showToast('ไม่พบ token ใน URL แต่ยังสามารถกรอกข้อมูลได้', 'warning');
         return;
       }
       try {
@@ -185,22 +184,19 @@
         
         if (!result) {
           console.error('[P3] No result object');
-          showToast('ไม่ได้รับข้อมูลจากเซิร์ฟเวอร์', 'error');
-          document.getElementById('saveBtn').disabled = true;
+          showToast('ไม่ได้รับข้อมูลจากเซิร์ฟเวอร์ แต่ยังสามารถกรอกข้อมูลได้', 'warning');
           return;
         }
         if (!result.valid) {
           console.error('[P3] Token not valid, reason:', result.reason, 'status:', result.status);
           const reasons = { 'no_token': 'ไม่มี token', 'not_found': 'Token ไม่พบ', 'not_approved': 'ยังไม่อนุมัติ', 'used': 'ใช้แล้ว' };
           const msg = reasons[result.reason] || ('Token ไม่ถูกต้อง: ' + result.reason);
-          showToast(msg, 'error');
-          document.getElementById('saveBtn').disabled = true;
+          showToast(msg + ' แต่ยังสามารถกรอกข้อมูลได้', 'warning');
           return;
         }
         if (result.status !== 'approved') {
           console.error('[P3] Status not approved, current status:', result.status);
-          showToast('ข้อมูลยังไม่ได้อนุมัติ (สถานะ: ' + result.status + ')', 'error');
-          document.getElementById('saveBtn').disabled = true;
+          showToast('ข้อมูลยังไม่ได้อนุมัติ (สถานะ: ' + result.status + ') แต่ยังสามารถกรอกข้อมูลได้', 'warning');
           return;
         }
         console.log('[P3] Token verified, loading form data');
@@ -208,8 +204,7 @@
         showToast('Token ผ่านการตรวจสอบแล้ว', 'success');
       } catch (err) {
         console.error('[P3] verifyToken error:', err.toString(), err.stack);
-        showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
-        document.getElementById('saveBtn').disabled = true;
+        showToast('เกิดข้อผิดพลาดในการตรวจสอบ token แต่ยังสามารถกรอกข้อมูลได้', 'warning');
       }
     }
 
