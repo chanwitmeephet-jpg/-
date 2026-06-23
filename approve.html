@@ -80,6 +80,7 @@
         <div class="section-title">ข้อมูลจากผู้เสนอ</div>
         <div id="reviewCard" class="review-card"></div>
         <div class="btn-group">
+          <button class="btn btn-secondary" id="testBtn" onclick="testToken()">ทดสอบ Token</button>
           <button class="btn btn-primary" id="approveBtn" onclick="approveRequest()">อนุมัติ</button>
           <button class="btn btn-danger" id="rejectBtn" onclick="rejectRequest()">ไม่อนุมัติ</button>
         </div>
@@ -169,20 +170,63 @@
         return;
       }
       if (!result.valid) {
-        setError(`Token ไม่ถูกต้อง: ${result.reason}`);
+        const reason = result.reason || 'unknown';
+        const message = reason === 'not_found'
+          ? 'Token ไม่พบในระบบ' : reason === 'used'
+          ? 'Token นี้ถูกใช้งานแล้ว' : reason === 'parse_error'
+          ? 'ข้อมูล token เสียหาย' : `Token ไม่ถูกต้อง: ${reason}`;
+        setError(message);
         document.getElementById('approveBtn').disabled = true;
         document.getElementById('rejectBtn').disabled = true;
         return;
       }
       document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
-      document.getElementById('messageBox').textContent = 'ข้อมูลถูกโหลดเรียบร้อยแล้ว กรุณาตรวจสอบก่อนอนุมัติ';
+      document.getElementById('messageBox').textContent = `Token ผ่านการตรวจสอบแล้ว (สถานะ: ${result.status || 'unknown'})`;
       renderReview(result.formData);
+    }
+
+    async function testToken() {
+      if (!token) {
+        showToast('ไม่พบ token ใน URL', 'error');
+        return;
+      }
+      document.getElementById('testBtn').disabled = true;
+      document.getElementById('testBtn').textContent = 'กำลังทดสอบ...';
+      try {
+        const result = await postAction({ action: 'check_token', token });
+        if (!result) {
+          showToast('ไม่สามารถเชื่อมต่อระบบได้', 'error');
+          return;
+        }
+        if (!result.valid) {
+          const reason = result.reason || 'unknown';
+          const message = reason === 'not_found'
+            ? 'Token ไม่พบในระบบ' : reason === 'used'
+            ? 'Token ถูกใช้งานไปแล้ว' : reason === 'parse_error'
+            ? 'ข้อมูล token เสียหาย' : `Token ไม่ถูกต้อง: ${reason}`;
+          setError(message);
+          showToast(message, 'error');
+          return;
+        }
+        document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
+        const statusLabel = result.status === 'approved' ? 'อนุมัติแล้ว' : result.status === 'pending' ? 'รออนุมัติ' : result.status;
+        showToast(`Token ผ่านการทดสอบ (${statusLabel})`, 'success');
+        loadToken();
+      } finally {
+        document.getElementById('testBtn').disabled = false;
+        document.getElementById('testBtn').textContent = 'ทดสอบ Token';
+      }
     }
 
     async function approveRequest() {
       const response = await postAction({ action: 'approve', token, form_url: FORM_URL });
-      if (!response || response.result !== 'success') {
-        showToast('ไม่สามารถอนุมัติได้', 'error');
+      if (!response) {
+        showToast('ไม่สามารถเชื่อมต่อระบบได้', 'error');
+        return;
+      }
+      if (response.result !== 'success') {
+        const message = response.message || 'ไม่สามารถอนุมัติได้ โปรดลองใหม่';
+        showToast(message, 'error');
         return;
       }
       showToast('อนุมัติเรียบร้อย ส่งลิงก์หน้าที่ 3 ไป LINE แล้ว', 'success');
