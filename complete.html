@@ -171,14 +171,29 @@
         document.getElementById('saveBtn').disabled = true;
         return;
       }
-      const result = await postAction({ action: 'check_token', token });
-      if (!result || !result.valid || result.status !== 'approved') {
-        showToast('Token ไม่ถูกต้องหรือยังไม่อนุมัติ', 'error');
+      try {
+        const url = `${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}&page=3`;
+        console.log('Fetching:', url);
+        const res = await fetch(url);
+        console.log('Response status:', res.status);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        console.log('Response text:', text);
+        const result = JSON.parse(text);
+        console.log('Parsed result:', result);
+        
+        if (!result || !result.valid || result.status !== 'approved') {
+          showToast('Token ไม่ถูกต้องหรือยังไม่อนุมัติ', 'error');
+          document.getElementById('saveBtn').disabled = true;
+          return;
+        }
+        renderSummary(result.formData);
+        showToast('Token ผ่านการตรวจสอบแล้ว', 'success');
+      } catch (err) {
+        console.error('verifyToken error:', err);
+        showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
         document.getElementById('saveBtn').disabled = true;
-        return;
       }
-      renderSummary(result.formData);
-      showToast('Token ผ่านการตรวจสอบแล้ว', 'success');
     }
 
     async function saveFinal() {
