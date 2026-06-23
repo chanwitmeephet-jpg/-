@@ -133,11 +133,11 @@
         <div class="grid grid-2">
           <div class="field">
             <label>เรื่อง <span class="req">*</span></label>
-            <input id="subject" type="text" placeholder="ระบุเรื่องขอเสนอซื้อ/จ้าง">
+            <input id="subject" type="text" placeholder="ระบุเรื่องขอเสนอซื้อ/จ้าง" value="ทดสอบระบบเสนอซื้อ/จ้าง">
           </div>
           <div class="field">
             <label>ข้าพเจ้า (ชื่อ-สกุล) <span class="req">*</span></label>
-            <input id="requester_name" type="text" placeholder="ชื่อผู้เสนอ">
+            <input id="requester_name" type="text" placeholder="ชื่อผู้เสนอ" value="สมชาย ใจดี">
           </div>
           <div class="field">
             <label>สังกัดหน่วยงาน <span class="req">*</span></label>
@@ -145,31 +145,31 @@
           </div>
           <div class="field">
             <label>ตำแหน่ง</label>
-            <input id="position" type="text" placeholder="ตำแหน่ง">
+            <input id="position" type="text" placeholder="ตำแหน่ง" value="นักวิชาการศึกษา">
           </div>
           <div class="field">
             <label>รายการที่ต้องการจัดซื้อ/จ้าง <span class="req">*</span></label>
-            <input id="purchase_item" type="text" placeholder="ระบุชื่อรายการ">
+            <input id="purchase_item" type="text" placeholder="ระบุชื่อรายการ" value="โครงเครื่องคอมพิวเตอร์">
           </div>
           <div class="field">
             <label>จำนวน (รายการ) <span class="req">*</span></label>
-            <input id="quantity" type="number" min="1" placeholder="0">
+            <input id="quantity" type="number" min="1" placeholder="0" value="5">
           </div>
           <div class="field" style="grid-column: span 2;">
             <label>เหตุผลในการขอซื้อ/จ้าง <span class="req">*</span></label>
-            <textarea id="purchase_reason" placeholder="ระบุเหตุผลและความจำเป็น"></textarea>
+            <textarea id="purchase_reason" placeholder="ระบุเหตุผลและความจำเป็น">ใช้สำหรับห้องเรียนและสอนสาขาวิทยาศาสตร์คอมพิวเตอร์</textarea>
           </div>
           <div class="field">
             <label>วงเงินที่จะจัดซื้อ/จ้าง (บาท) <span class="req">*</span></label>
-            <input id="budget" type="number" min="0" step="0.01" placeholder="0.00">
+            <input id="budget" type="number" min="0" step="0.01" placeholder="0.00" value="50000">
           </div>
           <div class="field">
             <label>จำนวนเงิน (ตัวอักษร)</label>
-            <input id="budget_text" type="text" placeholder="เช่น หนึ่งหมื่นบาทถ้วน">
+            <input id="budget_text" type="text" placeholder="เช่น หนึ่งหมื่นบาทถ้วน" value="ห้าหมื่นบาทถ้วน">
           </div>
           <div class="field" style="grid-column: span 2;">
             <label>รายละเอียดเพิ่มเติม</label>
-            <textarea id="purchase_detail" placeholder="สเปค ขนาด รายละเอียดเพิ่มเติม"></textarea>
+            <textarea id="purchase_detail" placeholder="สเปค ขนาด รายละเอียดเพิ่มเติม">CPU Core i5, RAM 8GB, SSD 256GB</textarea>
           </div>
         </div>
         <div class="button-row">
@@ -303,10 +303,13 @@
         return;
       }
 
+      const testToken = result.saveResult.token;
+      const testUrl = `approve.html?token=${testToken}`;
+      
       if (result.saveResult.line_sent === false) {
-        showToast('ทดสอบบันทึกสำเร็จ แต่ส่ง LINE ไม่สำเร็จ', 'error');
+        showToast(`ทดสอบบันทึกสำเร็จ แต่ส่ง LINE ไม่สำเร็จ\nToken: ${testToken}\nURL: ${testUrl}`, 'error');
       } else {
-        showToast('ทดสอบสำเร็จ ข้อมูลถูกส่งไปยัง LINE และชีตแล้ว', 'success');
+        showToast(`ทดสอบสำเร็จ ✓\nToken: ${testToken}\nกดลิงก์อนุมัติ: ${testUrl}`, 'success');
       }
       setButtonsDisabled(false);
     }
