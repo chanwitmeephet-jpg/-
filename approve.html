@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ใบเสนอซื้อ/จ้าง | หน้า 1</title>
+  <title>ใบเสนอซื้อ/จ้าง | อนุมัติ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #1a3a6b;
-      --bg: #f2f5fb;
+      --bg: #eef2fb;
       --surface: #ffffff;
       --border: #d2d8e8;
       --text: #1f2937;
@@ -21,268 +21,179 @@
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh;
+      margin: 0;
+      min-height: 100vh;
       font-family: 'Sarabun', sans-serif;
-      background: radial-gradient(circle at top right, rgba(26,58,107,0.14), transparent 32%), var(--bg);
+      background: linear-gradient(180deg, rgba(26,58,107,0.16) 0%, rgba(238,242,251,1) 100%);
       color: var(--text);
     }
-    .container {
-      max-width: 940px;
-      margin: 0 auto;
-      padding: 20px 18px 40px;
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: 0 18px 40px rgba(15,23,42,0.08);
-      overflow: hidden;
-    }
-    .hero {
-      background: var(--primary);
-      color: #fff;
-      padding: 28px 28px 24px;
-    }
-    .hero h1 { margin: 0; font-size: 26px; }
-    .hero p { margin: 10px 0 0; color: rgba(255,255,255,0.88); font-size: 15px; line-height: 1.7; }
-    .hero small { display: block; margin-top: 12px; color: rgba(255,255,255,0.76); }
-    .content { padding: 32px 28px 28px; }
-    .section-title {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 18px;
-      color: var(--primary);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .grid { display: grid; gap: 18px; }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .field { display: flex; flex-direction: column; gap: 8px; }
-    label { font-weight: 600; color: var(--muted); }
-    .req { color: var(--danger); margin-left: 4px; }
-    input, textarea, select {
-      width: 100%; min-height: 44px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 12px 14px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 15px;
-      background: #f8fafc;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    textarea { min-height: 104px; resize: vertical; }
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(26,58,107,0.12);
-      background: #ffffff;
-    }
-    .hint { font-size: 13px; color: var(--muted); }
-    .button-row { display: flex; justify-content: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
-    .btn { border: none; border-radius: 14px; cursor: pointer; font-size: 15px; padding: 14px 22px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 12px 24px rgba(26,58,107,0.18); }
-    .btn-primary:hover { transform: translateY(-1px); }
+    .container { max-width: 920px; margin: 0 auto; padding: 22px 18px 40px; }
+    .card { background: var(--surface); border-radius: 24px; box-shadow: 0 20px 48px rgba(15,23,42,0.1); overflow: hidden; border: 1px solid rgba(26,58,107,0.12); }
+    .banner { background: var(--primary); color: #fff; padding: 30px 28px; }
+    .banner h1 { margin-bottom: 10px; font-size: 26px; }
+    .banner p { margin: 0; opacity: 0.95; line-height: 1.75; }
+    .content { padding: 32px 28px; }
+    .section-title { margin-bottom: 20px; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: var(--primary); text-transform: uppercase; }
+    .info-block { display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-bottom: 24px; }
+    .info-label { font-size: 13px; color: var(--muted); }
+    .token-chip { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); padding: 12px 14px; border-radius: 14px; font-size: 14px; }
+    .review-card { border: 1px solid var(--border); border-radius: 18px; padding: 22px; background: #f9fbff; }
+    .review-row { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+    .review-row:last-child { border-bottom: none; }
+    .review-label { color: var(--muted); font-weight: 700; }
+    .review-value { color: var(--text); }
+    .btn-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 28px; }
+    .btn { border: none; border-radius: 14px; min-width: 150px; padding: 14px 18px; font-size: 15px; cursor: pointer; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .btn-primary { background: var(--success); color: #fff; }
     .btn-secondary { background: #edf2f7; color: var(--text); }
-    .btn-secondary:hover { background: #e2e8f0; }
-    .summary-card {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: #fafbff;
-      padding: 20px;
-    }
-    .summary-row { display: grid; grid-template-columns: 160px 1fr; gap: 12px; margin-bottom: 14px; }
-    .summary-label { font-weight: 700; color: var(--muted); }
-    .summary-value { color: var(--text); }
-    .toast {
-      position: fixed; right: 20px; bottom: 20px;
-      min-width: 260px;
-      border-radius: 14px;
-      padding: 16px 18px;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      z-index: 9999;
-      color: #fff;
-      box-shadow: 0 18px 36px rgba(15,23,42,0.18);
-    }
-    .toast.show { display: flex; animation: popIn 0.22s ease forwards; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn:hover { transform: translateY(-1px); }
+    .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 999px; background: rgba(47,133,90,0.12); color: #276749; font-weight: 700; }
+    .alert { border-radius: 16px; padding: 18px 20px; background: #f7f9ff; border: 1px solid #d2d8e8; margin-bottom: 24px; color: var(--text); }
+    .toast { position: fixed; bottom: 20px; right: 20px; display: none; min-width: 240px; padding: 16px 18px; border-radius: 16px; color: #fff; z-index: 999; font-weight: 600; box-shadow: 0 18px 42px rgba(15,23,42,0.15); }
+    .toast.show { display: block; animation: fadeInUp 0.2s ease forwards; }
     .toast.success { background: #2f855a; }
     .toast.error { background: #c53030; }
     .toast.warning { background: #d69e2e; }
-    @keyframes popIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .alert { padding: 18px 20px; border-radius: 16px; border: 1px solid #cbd5e0; background: #f8fafc; color: var(--text); margin-bottom: 24px; }
-    @media(max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media(max-width: 720px) { .info-block { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <div class="hero">
-        <h1>ใบเสนอซื้อ/จ้าง (หน้า 1)</h1>
-        <p>กรอกข้อมูลฟอร์มผู้เสนอเพื่อส่งเรื่องต่อ ผอ. หน่วยงาน กองพัฒนานักศึกษา มหาวิทยาลัยราชภัฏกำแพงเพชร</p>
-        <small>ระบบจะบันทึกข้อมูลไปยัง Google Sheets และส่งแจ้งเตือนไปยัง LINE พร้อมลิงก์อนุมัติ</small>
+      <div class="banner">
+        <h1>หน้าอนุมัติ</h1>
+        <p>ผู้อำนวยการสามารถตรวจสอบเนื้อหาและส่งต่อไปยังหน้ากรอกข้อมูลเพิ่มเติมได้ทันที</p>
       </div>
       <div class="content">
-        <div class="alert">กรุณากรอกข้อมูลให้ครบถ้วน แล้วกดปุ่ม "ขอยื่นอนุมัติ"</div>
-        <div class="section-title">ข้อมูลการเสนอซื้อ/จ้าง</div>
-        <div class="grid grid-2">
-          <div class="field">
-            <label>เรื่อง <span class="req">*</span></label>
-            <input id="subject" type="text" placeholder="ระบุเรื่องขอเสนอซื้อ/จ้าง">
+        <div class="info-block">
+          <div>
+            <div class="section-title">TOKEN</div>
+            <div id="tokenValue" class="token-chip">กำลังโหลด...</div>
           </div>
-          <div class="field">
-            <label>ข้าพเจ้า (ชื่อ-สกุล) <span class="req">*</span></label>
-            <input id="requester_name" type="text" placeholder="ชื่อผู้เสนอ">
-          </div>
-          <div class="field">
-            <label>สังกัดหน่วยงาน <span class="req">*</span></label>
-            <input id="department" type="text" value="กองพัฒนานักศึกษา" placeholder="กองพัฒนานักศึกษา">
-          </div>
-          <div class="field">
-            <label>ตำแหน่ง</label>
-            <input id="position" type="text" placeholder="ตำแหน่ง">
-          </div>
-          <div class="field">
-            <label>รายการที่ต้องการจัดซื้อ/จ้าง <span class="req">*</span></label>
-            <input id="purchase_item" type="text" placeholder="ระบุชื่อรายการ">
-          </div>
-          <div class="field">
-            <label>จำนวน (รายการ) <span class="req">*</span></label>
-            <input id="quantity" type="number" min="1" placeholder="0">
-          </div>
-          <div class="field" style="grid-column: span 2;">
-            <label>เหตุผลในการขอซื้อ/จ้าง <span class="req">*</span></label>
-            <textarea id="purchase_reason" placeholder="ระบุเหตุผลและความจำเป็น"></textarea>
-          </div>
-          <div class="field">
-            <label>วงเงินที่จะจัดซื้อ/จ้าง (บาท) <span class="req">*</span></label>
-            <input id="budget" type="number" min="0" step="0.01" placeholder="0.00">
-          </div>
-          <div class="field">
-            <label>จำนวนเงิน (ตัวอักษร)</label>
-            <input id="budget_text" type="text" placeholder="เช่น หนึ่งหมื่นบาทถ้วน">
-          </div>
-          <div class="field" style="grid-column: span 2;">
-            <label>รายละเอียดเพิ่มเติม</label>
-            <textarea id="purchase_detail" placeholder="สเปค ขนาด รายละเอียดเพิ่มเติม"></textarea>
+          <div>
+            <div class="status-badge" id="statusBadge">รอโหลด</div>
           </div>
         </div>
-        <div class="button-row">
-          <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">ขอยื่นอนุมัติ</button>
+        <div id="messageBox" class="alert">กำลังเรียกข้อมูลจากระบบ โปรดรอสักครู่...</div>
+        <div class="section-title">ข้อมูลจากผู้เสนอ</div>
+        <div id="reviewCard" class="review-card"></div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="approveBtn" onclick="approveRequest()">อนุมัติ</button>
+          <button class="btn btn-danger" id="rejectBtn" onclick="rejectRequest()">ไม่อนุมัติ</button>
         </div>
       </div>
     </div>
   </div>
-
   <div id="toast" class="toast"></div>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwds0pOW0qpIO5kqlYmSE3Fdjhn_KtN9hgnBBq6r2rjjHG8TgAAptNf1V8I877Ij9zHYQ/exec';
     const FORM_URL = 'https://chanwitmeephet-jpg.github.io/-/';
+    const token = new URLSearchParams(window.location.search).get('token');
 
-    function showToast(message, type = 'success') {
+    function showToast(message, type='success') {
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.className = `toast show ${type}`;
-      clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => { toast.className = 'toast'; }, 3500);
+      clearTimeout(window.toastTimeout);
+      window.toastTimeout = setTimeout(() => { toast.className = 'toast'; }, 3600);
     }
 
-    async function postToGAS(body) {
-      const options = {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      };
+    function setError(message) {
+      document.getElementById('messageBox').textContent = message;
+      document.getElementById('messageBox').style.borderColor = '#feb2b2';
+    }
+
+    async function postAction(payload) {
       try {
-        const response = await fetch(SCRIPT_URL, options);
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
         if (!response.ok) throw new Error('Network error');
         return await response.json();
       } catch (err) {
-        console.warn('POST failed, trying no-cors fallback', err);
+        console.warn(err);
         try {
           await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify(body)
+            body: JSON.stringify(payload)
           });
-          showToast('Fallback no-cors ถูกใช้งานแล้ว โปรดตรวจสอบผลลัพธ์อีกครั้ง', 'warning');
+          showToast('Fallback no-cors ถูกใช้งานแล้ว', 'warning');
           return null;
-        } catch (fallbackError) {
-          throw new Error('Network request failed');
+        } catch {
+          throw new Error('ไม่สามารถเชื่อมต่อ GAS ได้');
         }
       }
     }
 
-    function validateForm(data) {
-      const required = ['subject', 'requester_name', 'department', 'purchase_item', 'purchase_reason', 'quantity', 'budget'];
-      for (const key of required) {
-        if (!data[key] || data[key].toString().trim() === '') {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    async function submitForm() {
-      const payload = {
-        action: 'save_page1',
-        subject: document.getElementById('subject').value.trim(),
-        requester_name: document.getElementById('requester_name').value.trim(),
-        department: document.getElementById('department').value.trim(),
-        position: document.getElementById('position').value.trim(),
-        purchase_item: document.getElementById('purchase_item').value.trim(),
-        purchase_reason: document.getElementById('purchase_reason').value.trim(),
-        quantity: document.getElementById('quantity').value.trim(),
-        budget: document.getElementById('budget').value.trim(),
-        budget_text: document.getElementById('budget_text').value.trim(),
-        purchase_detail: document.getElementById('purchase_detail').value.trim(),
-      };
-
-      if (!validateForm(payload)) {
-        showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน', 'error');
+    function renderReview(data) {
+      const card = document.getElementById('reviewCard');
+      if (!data) {
+        card.innerHTML = '<p>ไม่พบข้อมูล</p>';
         return;
       }
+      const fields = [
+        ['เรื่อง', data.subject],
+        ['ผู้เสนอ', data.requester_name],
+        ['สังกัดหน่วยงาน', data.department],
+        ['ตำแหน่ง', data.position],
+        ['รายการ', data.purchase_item],
+        ['เหตุผล', data.purchase_reason],
+        ['จำนวน', data.quantity],
+        ['วงเงิน', data.budget],
+        ['จำนวนเงิน (ตัวอักษร)', data.budget_text],
+        ['รายละเอียดเพิ่มเติม', data.purchase_detail]
+      ];
+      card.innerHTML = fields.map(([label, value]) =>
+        `<div class="review-row"><div class="review-label">${label}</div><div class="review-value">${value || '-'}</div></div>`
+      ).join('');
+    }
 
-      document.getElementById('submitBtn').disabled = true;
-      showToast('กำลังบันทึกข้อมูล...', 'success');
-
-      const saveResult = await postToGAS(payload);
-      if (!saveResult || saveResult.result !== 'success') {
-        showToast('ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่', 'error');
-        document.getElementById('submitBtn').disabled = false;
+    async function loadToken() {
+      if (!token) {
+        setError('ไม่พบ token ใน URL กรุณาเปิดลิงก์ approve.html?token=xxx');
+        document.getElementById('approveBtn').disabled = true;
+        document.getElementById('rejectBtn').disabled = true;
         return;
       }
-
-      const token = saveResult.token;
-      const notifyResult = await postToGAS({
-        action: 'notify_line',
-        token,
-        form_url: FORM_URL,
-        subject: payload.subject,
-        requester_name: payload.requester_name,
-        department: payload.department,
-        purchase_item: payload.purchase_item,
-        purchase_reason: payload.purchase_reason,
-        quantity: payload.quantity,
-        budget: payload.budget,
-        budget_text: payload.budget_text,
-        purchase_detail: payload.purchase_detail
-      });
-
-      if (!notifyResult || notifyResult.result !== 'success') {
-        showToast('บันทึกสำเร็จ แต่แจ้งเตือน LINE ไม่สำเร็จ', 'warning');
-      } else {
-        showToast('บันทึกสำเร็จและแจ้งเตือน LINE แล้ว', 'success');
+      document.getElementById('tokenValue').textContent = token;
+      const result = await postAction({ action: 'check_token', token });
+      if (!result) {
+        setError('ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง');
+        return;
       }
-      document.getElementById('submitBtn').disabled = false;
+      if (!result.valid) {
+        setError(`Token ไม่ถูกต้อง: ${result.reason}`);
+        document.getElementById('approveBtn').disabled = true;
+        document.getElementById('rejectBtn').disabled = true;
+        return;
+      }
+      document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
+      document.getElementById('messageBox').textContent = 'ข้อมูลถูกโหลดเรียบร้อยแล้ว กรุณาตรวจสอบก่อนอนุมัติ';
+      renderReview(result.formData);
     }
+
+    async function approveRequest() {
+      const response = await postAction({ action: 'approve', token, form_url: FORM_URL });
+      if (!response || response.result !== 'success') {
+        showToast('ไม่สามารถอนุมัติได้', 'error');
+        return;
+      }
+      showToast('อนุมัติเรียบร้อย ส่งลิงก์หน้าที่ 3 ไป LINE แล้ว', 'success');
+      document.getElementById('statusBadge').textContent = 'approved';
+    }
+
+    async function rejectRequest() {
+      showToast('ยังไม่รองรับการปฏิเสธในระบบนี้', 'warning');
+    }
+
+    loadToken();
   </script>
 </body>
 </html>
