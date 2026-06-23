@@ -90,7 +90,7 @@
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsd1qvZuv2mJgbIXR2PihvcMxHBgtBXnbTZLatN5ruzhOL39v8JfMTFoBaI1nTAScrDg/exec';
-    const FORM_URL = 'https://chanwitmeephet-jpg.github.io/-/';
+    const FORM_URL = window.location.origin + window.location.pathname.replace(/(index|approve|complete)\.html$/, '');
     const token = new URLSearchParams(window.location.search).get('token');
 
     function showToast(message, type='success') {
@@ -235,15 +235,23 @@
       }
     }
 
+    function setActionButtonsEnabled(enabled) {
+      document.getElementById('approveBtn').disabled = !enabled;
+      document.getElementById('rejectBtn').disabled = !enabled;
+    }
+
     async function approveRequest() {
+      setActionButtonsEnabled(false);
       const response = await postAction({ action: 'approve', token, form_url: FORM_URL });
       if (!response) {
         showToast('ไม่สามารถเชื่อมต่อระบบได้', 'error');
+        setActionButtonsEnabled(true);
         return;
       }
       if (response.result !== 'success') {
         const message = response.message || 'ไม่สามารถอนุมัติได้ โปรดลองใหม่';
         showToast(message, 'error');
+        setActionButtonsEnabled(true);
         return;
       }
       showToast('อนุมัติเรียบร้อย กำลังเปิดหน้าที่ 3...', 'success');
@@ -270,9 +278,11 @@
 
     async function rejectRequest() {
       if (!confirm('คุณแน่ใจหรือว่าต้องการไม่อนุมัติ?')) return;
+      setActionButtonsEnabled(false);
       const response = await postAction({ action: 'reject', token, rejection_reason: 'ไม่อนุมัติโดยผู้อนุมัติ' });
       if (!response) {
         showToast('ไม่สามารถบันทึกการไม่อนุมัติได้', 'error');
+        setActionButtonsEnabled(true);
         return;
       }
       showToast('ไม่อนุมัติแล้ว และบันทึกไว้แล้ว', 'warning');
