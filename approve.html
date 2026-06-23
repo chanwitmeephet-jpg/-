@@ -187,8 +187,7 @@
             ? 'Token นี้ถูกใช้งานแล้ว' : reason === 'parse_error'
             ? 'ข้อมูล token เสียหาย' : `Token ไม่ถูกต้อง: ${reason}`;
           setError(message);
-          document.getElementById('approveBtn').disabled = true;
-          document.getElementById('rejectBtn').disabled = true;
+          showToast(message, 'warning');
           return;
         }
         document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
@@ -257,7 +256,7 @@
       showToast('อนุมัติเรียบร้อย กำลังเปิดหน้าที่ 3...', 'success');
       document.getElementById('statusBadge').textContent = 'approved';
       setTimeout(() => {
-        window.location.href = `${FORM_URL}complete.html?token=${encodeURIComponent(token)}&page=3`;
+        window.location.href = `complete.html?token=${encodeURIComponent(token)}&page=3`;
       }, 1500);
     }
 
