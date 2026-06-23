@@ -248,7 +248,9 @@
     }
 
     async function rejectRequest() {
-      showToast('ยังไม่รองรับการปฏิเสธในระบบนี้', 'warning');
+      if (!confirm('คุณแน่ใจหรือว่าต้องการไม่อนุมัติ?')) return;
+      showToast('ไม่อนุมัติแล้ว', 'warning');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
     }
 
     loadToken();
