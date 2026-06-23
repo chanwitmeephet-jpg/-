@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ใบเสนอซื้อ/จ้าง | แก้ไขใหม่</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3a6b;
+      --bg: #f2f5fb;
+      --surface: #ffffff;
+      --border: #d2d8e8;
+      --text: #1f2937;
+      --muted: #4a5568;
+      --success: #2f855a;
+      --danger: #c53030;
+      --warning: #d69e2e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: 'Sarabun', sans-serif;
+      background: radial-gradient(circle at top right, rgba(26,58,107,0.14), transparent 32%), var(--bg);
+      color: var(--text);
+    }
+    .container {
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 20px 18px 40px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.08);
+      overflow: hidden;
+    }
+    .hero {
+      background: var(--warning);
+      color: #fff;
+      padding: 28px 28px 24px;
+    }
+    .hero h1 { margin: 0; font-size: 26px; }
+    .hero p { margin: 10px 0 0; color: rgba(255,255,255,0.88); font-size: 15px; line-height: 1.7; }
+    .content { padding: 32px 28px 28px; }
+    .section-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    label { font-weight: 600; color: var(--muted); }
+    .req { color: var(--danger); margin-left: 4px; }
+    input, textarea, select {
+      width: 100%; min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 15px;
+      background: #f8fafc;
+      transition: border-color 0.2s ease;
+    }
+    textarea { min-height: 104px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,58,107,0.1);
+    }
+    .button-row {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary { background: var(--success); color: #fff; }
+    .btn-secondary { background: #edf2f7; color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .alert {
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid #fbd38d;
+      background: #fffaf0;
+      color: #7c2d12;
+      margin-bottom: 24px;
+    }
+    .alert.danger {
+      border-color: #feb2b2;
+      background: #fff5f5;
+      color: #742a2a;
+    }
+    .token-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #eef2ff;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      border: 1px solid #d2d8e8;
+    }
+    .token-info-text { font-size: 13px; color: var(--muted); }
+    .token-chip {
+      background: rgba(26,58,107,0.12);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      font-family: 'Courier New', monospace;
+    }
+    .rejection-reason {
+      padding: 18px 20px;
+      background: #fff5f5;
+      border: 1px solid #feb2b2;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      color: #742a2a;
+    }
+    .rejection-reason strong { color: var(--danger); }
+    .toast {
+      position: fixed; right: 20px; bottom: 20px;
+      min-width: 260px;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      z-index: 9999;
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(15,23,42,0.18);
+    }
+    .toast.show { display: flex; animation: popIn 0.22s ease forwards; }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    .toast.warning { background: var(--warning); }
+    @keyframes popIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @media(max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="hero">
+        <h1>⚠️ แก้ไขใหม่และส่งอีกรอบ</h1>
+        <p>เอกสารของคุณไม่ได้ผ่านการอนุมัติ โปรดแก้ไขข้อมูลตามเหตุผลด้านล่างและส่งอีกครั้ง</p>
+      </div>
+      <div class="content">
+        <div class="token-info">
+          <div class="token-info-text">โทเค็นการร้องขอ:</div>
+          <div class="token-chip" id="tokenValue">-</div>
+        </div>
+
+        <div id="rejectionBox" class="rejection-reason" style="display:none;">
+          <strong>เหตุผลการไม่อนุมัติ:</strong>
+          <p id="rejectionReason" style="margin: 8px 0 0;">-</p>
+        </div>
+
+        <div id="messageBox" class="alert">กำลังโหลดข้อมูล...</div>
+
+        <div class="section-title">แก้ไขข้อมูล</div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>เรื่อง <span class="req">*</span></label>
+            <input id="subject" type="text" placeholder="ระบุเรื่องขอเสนอซื้อ/จ้าง">
+          </div>
+          <div class="field">
+            <label>ข้าพเจ้า (ชื่อ-สกุล) <span class="req">*</span></label>
+            <input id="requester_name" type="text" placeholder="ชื่อผู้เสนอ">
+          </div>
+          <div class="field">
+            <label>อีเมล</label>
+            <input id="email" type="email" placeholder="อีเมลติดต่อ">
+          </div>
+          <div class="field">
+            <label>สังกัดหน่วยงาน <span class="req">*</span></label>
+            <input id="department" type="text" placeholder="กองพัฒนานักศึกษา">
+          </div>
+          <div class="field">
+            <label>ตำแหน่ง</label>
+            <input id="position" type="text" placeholder="ตำแหน่ง">
+          </div>
+          <div class="field">
+            <label>รายการที่ต้องการจัดซื้อ/จ้าง <span class="req">*</span></label>
+            <input id="purchase_item" type="text" placeholder="ระบุชื่อรายการ">
+          </div>
+          <div class="field">
+            <label>จำนวน (รายการ) <span class="req">*</span></label>
+            <input id="quantity" type="number" min="1" placeholder="0">
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>เหตุผลในการขอซื้อ/จ้าง <span class="req">*</span></label>
+            <textarea id="purchase_reason" placeholder="ระบุเหตุผลและความจำเป็น"></textarea>
+          </div>
+          <div class="field">
+            <label>วงเงินที่จะจัดซื้อ/จ้าง (บาท) <span class="req">*</span></label>
+            <input id="budget" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="field">
+            <label>จำนวนเงิน (ตัวอักษร)</label>
+            <input id="budget_text" type="text" placeholder="เช่น หนึ่งหมื่นบาทถ้วน">
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>รายละเอียดเพิ่มเติม</label>
+            <textarea id="purchase_detail" placeholder="สเปค ขนาด รายละเอียดเพิ่มเติม"></textarea>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-secondary" onclick="goBack()">ย้อนกลับ</button>
+          <button class="btn btn-primary" id="submitBtn" onclick="resubmitForm()">ส่งใหม่อีกครั้ง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtkIDZHmprxLmMrvwI1Z1LRVJU1cO_t23ZhhSQZiSJSz9GPUyF6_Bgxqelb9NnnGDWbw/exec';
+    const FORM_URL = 'https://chanwitmeephet-jpg.github.io/-/';
+    const token = new URLSearchParams(window.location.search).get('token');
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = message;
+      toast.className = `toast show ${type}`;
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => { toast.className = 'toast'; }, 3500);
+    }
+
+    function setMessageBox(message, isError = false) {
+      const box = document.getElementById('messageBox');
+      box.textContent = message;
+      box.className = isError ? 'alert danger' : 'alert';
+    }
+
+    async function loadRejectedData() {
+      if (!token) {
+        setMessageBox('ไม่พบ token ใน URL', true);
+        document.getElementById('submitBtn').disabled = true;
+        return;
+      }
+
+      document.getElementById('tokenValue').textContent = token;
+
+      try {
+        const url = `${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const result = await response.json();
+        
+        if (!result || !result.valid) {
+          setMessageBox('Token ไม่ถูกต้องหรือหมดอายุแล้ว', true);
+          document.getElementById('submitBtn').disabled = true;
+          return;
+        }
+
+        if (result.status !== 'rejected') {
+          setMessageBox('เอกสารนี้ไม่อยู่ในสถานะที่ต้องแก้ไข', true);
+          document.getElementById('submitBtn').disabled = true;
+          return;
+        }
+
+        // โหลดข้อมูลเดิม
+        if (result.formData) {
+          document.getElementById('subject').value = result.formData.subject || '';
+          document.getElementById('requester_name').value = result.formData.requester_name || '';
+          document.getElementById('email').value = result.formData.email || '';
+          document.getElementById('department').value = result.formData.department || '';
+          document.getElementById('position').value = result.formData.position || '';
+          document.getElementById('purchase_item').value = result.formData.purchase_item || '';
+          document.getElementById('quantity').value = result.formData.quantity || '';
+          document.getElementById('purchase_reason').value = result.formData.purchase_reason || '';
+          document.getElementById('budget').value = result.formData.budget || '';
+          document.getElementById('budget_text').value = result.formData.budget_text || '';
+          document.getElementById('purchase_detail').value = result.formData.purchase_detail || '';
+        }
+
+        // แสดงเหตุผลการไม่อนุมัติ
+        const rejectionReason = result.formData?.rejection_reason;
+        if (rejectionReason) {
+          document.getElementById('rejectionBox').style.display = 'block';
+          document.getElementById('rejectionReason').textContent = rejectionReason;
+        }
+
+        setMessageBox('ข้อมูลได้รับการโหลดแล้ว กรุณาแก้ไขและส่งใหม่อีกครั้ง');
+      } catch (err) {
+        setMessageBox(`เกิดข้อผิดพลาด: ${err.message}`, true);
+        document.getElementById('submitBtn').disabled = true;
+      }
+    }
+
+    function validateForm() {
+      const required = [
+        'subject', 'requester_name', 'department', 
+        'purchase_item', 'purchase_reason', 'quantity', 'budget'
+      ];
+      for (const key of required) {
+        const value = document.getElementById(key).value.trim();
+        if (!value || value === '') {
+          showToast(`กรุณากรอก ${key}`, 'error');
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function getFormPayload() {
+      return {
+        action: 'resubmit_edit',
+        token: token,
+        form_url: FORM_URL,
+        subject: document.getElementById('subject').value.trim(),
+        requester_name: document.getElementById('requester_name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        department: document.getElementById('department').value.trim(),
+        position: document.getElementById('position').value.trim(),
+        purchase_item: document.getElementById('purchase_item').value.trim(),
+        purchase_reason: document.getElementById('purchase_reason').value.trim(),
+        quantity: document.getElementById('quantity').value.trim(),
+        budget: document.getElementById('budget').value.trim(),
+        budget_text: document.getElementById('budget_text').value.trim(),
+        purchase_detail: document.getElementById('purchase_detail').value.trim(),
+      };
+    }
+
+    async function postToGAS(payload) {
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error('Network error');
+        return await response.json();
+      } catch (err) {
+        try {
+          await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(payload)
+          });
+          return null;
+        } catch {
+          throw err;
+        }
+      }
+    }
+
+    async function resubmitForm() {
+      if (!validateForm()) return;
+
+      document.getElementById('submitBtn').disabled = true;
+      showToast('กำลังส่งข้อมูล...', 'warning');
+
+      const payload = getFormPayload();
+      const result = await postToGAS(payload);
+
+      if (!result || result.result !== 'success') {
+        showToast('ไม่สามารถส่งข้อมูลได้ กรุณาลองใหม่', 'error');
+        document.getElementById('submitBtn').disabled = false;
+        return;
+      }
+
+      showToast('ส่งข้อมูลสำเร็จ', 'success');
+      setTimeout(() => {
+        window.location.href = FORM_URL;
+      }, 2000);
+    }
+
+    function goBack() {
+      if (confirm('ยืนยันการออกจากหน้านี้?')) {
+        window.history.back();
+      }
+    }
+
+    // โหลดข้อมูลเมื่อเพจเปิด
+    window.addEventListener('DOMContentLoaded', loadRejectedData);
+  </script>
+</body>
+</html>
