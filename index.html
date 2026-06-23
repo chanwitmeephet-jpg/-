@@ -173,6 +173,7 @@
           </div>
         </div>
         <div class="button-row">
+          <button class="btn btn-secondary" id="testBtn" onclick="testForm()">ทดสอบข้อมูล</button>
           <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">ขอยื่นอนุมัติ</button>
         </div>
       </div>
@@ -230,8 +231,8 @@
       return true;
     }
 
-    async function submitForm() {
-      const payload = {
+    function getFormPayload() {
+      return {
         action: 'save_page1',
         subject: document.getElementById('subject').value.trim(),
         requester_name: document.getElementById('requester_name').value.trim(),
@@ -244,35 +245,85 @@
         budget_text: document.getElementById('budget_text').value.trim(),
         purchase_detail: document.getElementById('purchase_detail').value.trim(),
       };
+    }
 
-      if (!validateForm(payload)) {
-        showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน', 'error');
-        return;
-      }
+    function setButtonsDisabled(disabled) {
+      document.getElementById('submitBtn').disabled = disabled;
+      document.getElementById('testBtn').disabled = disabled;
+    }
 
-      document.getElementById('submitBtn').disabled = true;
-      showToast('กำลังบันทึกข้อมูล...', 'success');
-
+    async function saveForm(payload, isTest = false) {
+      payload.test_mode = isTest;
       const saveResult = await postToGAS(payload);
       if (!saveResult || saveResult.result !== 'success') {
         showToast('ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่', 'error');
-        document.getElementById('submitBtn').disabled = false;
-        return;
+        return null;
       }
 
       const token = saveResult.token;
       const notifyResult = await postToGAS({
         action: 'notify_line',
         token,
-        form_url: FORM_URL
+        form_url: FORM_URL,
+        subject: payload.subject,
+        requester_name: payload.requester_name,
+        department: payload.department,
+        purchase_item: payload.purchase_item,
+        purchase_reason: payload.purchase_reason,
+        quantity: payload.quantity,
+        budget: payload.budget,
+        budget_text: payload.budget_text,
+        purchase_detail: payload.purchase_detail,
+        test_mode: isTest
       });
 
-      if (!notifyResult || notifyResult.result !== 'success') {
+      return { saveResult, notifyResult, token };
+    }
+
+    async function submitForm() {
+      const payload = getFormPayload();
+      if (!validateForm(payload)) {
+        showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน', 'error');
+        return;
+      }
+
+      setButtonsDisabled(true);
+      showToast('กำลังบันทึกข้อมูล...', 'success');
+      const result = await saveForm(payload, false);
+      if (!result) {
+        setButtonsDisabled(false);
+        return;
+      }
+
+      if (!result.notifyResult || result.notifyResult.result !== 'success') {
         showToast('บันทึกสำเร็จ แต่แจ้งเตือน LINE ไม่สำเร็จ', 'warning');
       } else {
         showToast('บันทึกสำเร็จและแจ้งเตือน LINE แล้ว', 'success');
       }
-      document.getElementById('submitBtn').disabled = false;
+      setButtonsDisabled(false);
+    }
+
+    async function testForm() {
+      const payload = getFormPayload();
+      if (!validateForm(payload)) {
+        showToast('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วนก่อนทดสอบ', 'error');
+        return;
+      }
+
+      setButtonsDisabled(true);
+      showToast('กำลังทดสอบข้อมูลและส่ง LINE...', 'warning');
+      const result = await saveForm(payload, true);
+      if (!result) {
+        setButtonsDisabled(false);
+        return;
+      }
+
+      if (!result.notifyResult || result.notifyResult.result !== 'success') {
+        showToast('ทดสอบบันทึกสำเร็จ แต่แจ้งเตือน LINE ไม่สำเร็จ', 'error');
+      } else {
+        showToast('ทดสอบสำเร็จ ข้อมูลถูกส่งไปยัง LINE และชีตแล้ว', 'success');
+      }
+      setButtonsDisabled(false);
     }
   </script>
 </body>
