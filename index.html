@@ -304,7 +304,7 @@
       }
 
       const testToken = result.saveResult.token;
-      const testUrl = `approve.html?token=${testToken}`;
+      const testUrl = `${FORM_URL}approve.html?token=${testToken}&page=2`;
       
       if (result.saveResult.line_sent === false) {
         showToast(`ทดสอบบันทึกสำเร็จ แต่ส่ง LINE ไม่สำเร็จ\nToken: ${testToken}\nURL: ${testUrl}`, 'error');
