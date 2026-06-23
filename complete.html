@@ -173,24 +173,40 @@
       }
       try {
         const url = `${SCRIPT_URL}?api=check&token=${encodeURIComponent(token)}&page=3`;
-        console.log('Fetching:', url);
+        console.log('[P3] Fetching token from:', url);
         const res = await fetch(url);
-        console.log('Response status:', res.status);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        console.log('[P3] Response status:', res.status, res.statusText);
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
         const text = await res.text();
-        console.log('Response text:', text);
+        console.log('[P3] Response text length:', text.length, 'text:', text);
         const result = JSON.parse(text);
-        console.log('Parsed result:', result);
+        console.log('[P3] Parsed result:', JSON.stringify(result));
         
-        if (!result || !result.valid || result.status !== 'approved') {
-          showToast('Token ไม่ถูกต้องหรือยังไม่อนุมัติ', 'error');
+        if (!result) {
+          console.error('[P3] No result object');
+          showToast('ไม่ได้รับข้อมูลจากเซิร์ฟเวอร์', 'error');
           document.getElementById('saveBtn').disabled = true;
           return;
         }
+        if (!result.valid) {
+          console.error('[P3] Token not valid, reason:', result.reason, 'status:', result.status);
+          const reasons = { 'no_token': 'ไม่มี token', 'not_found': 'Token ไม่พบ', 'not_approved': 'ยังไม่อนุมัติ', 'used': 'ใช้แล้ว' };
+          const msg = reasons[result.reason] || ('Token ไม่ถูกต้อง: ' + result.reason);
+          showToast(msg, 'error');
+          document.getElementById('saveBtn').disabled = true;
+          return;
+        }
+        if (result.status !== 'approved') {
+          console.error('[P3] Status not approved, current status:', result.status);
+          showToast('ข้อมูลยังไม่ได้อนุมัติ (สถานะ: ' + result.status + ')', 'error');
+          document.getElementById('saveBtn').disabled = true;
+          return;
+        }
+        console.log('[P3] Token verified, loading form data');
         renderSummary(result.formData);
         showToast('Token ผ่านการตรวจสอบแล้ว', 'success');
       } catch (err) {
-        console.error('verifyToken error:', err);
+        console.error('[P3] verifyToken error:', err.toString(), err.stack);
         showToast('เกิดข้อผิดพลาด: ' + err.message, 'error');
         document.getElementById('saveBtn').disabled = true;
       }
