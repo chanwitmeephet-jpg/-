@@ -79,9 +79,19 @@
         <div id="messageBox" class="alert">กำลังเรียกข้อมูลจากระบบ โปรดรอสักครู่...</div>
         <div class="section-title">ข้อมูลจากผู้เสนอ</div>
         <div id="reviewCard" class="review-card"></div>
+
+        <div id="rejectionForm" style="display:none; margin-top: 26px;">
+          <div class="section-title">เหตุผลการไม่อนุมัติ</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <textarea id="rejectionReason" placeholder="ระบุเหตุผลที่ไม่อนุมัติ เช่น ราคาสูง ข้อมูลไม่ครบ ฯลฯ" style="width: 100%; min-height: 110px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--border); font-family: 'Sarabun', sans-serif; font-size: 15px;"></textarea>
+          </div>
+        </div>
+
         <div class="btn-group">
           <button class="btn btn-primary" id="approveBtn" onclick="approveRequest()">อนุมัติ</button>
-          <button class="btn btn-danger" id="rejectBtn" onclick="rejectRequest()">ไม่อนุมัติ</button>
+          <button class="btn btn-danger" id="rejectBtn" onclick="toggleRejectForm()">ไม่อนุมัติ</button>
+          <button class="btn btn-primary" id="confirmRejectBtn" style="display:none;" onclick="rejectRequest()">ยืนยันการไม่อนุมัติ</button>
+          <button class="btn btn-secondary" id="cancelRejectBtn" style="display:none;" onclick="toggleRejectForm()">ยกเลิก</button>
         </div>
       </div>
     </div>
@@ -276,16 +286,63 @@
     }
 
     async function rejectRequest() {
-      if (!confirm('คุณแน่ใจหรือว่าต้องการไม่อนุมัติ?')) return;
+      const rejectionReason = document.getElementById('rejectionReason').value.trim();
+      if (!rejectionReason) {
+        showToast('กรุณาระบุเหตุผลการไม่อนุมัติ', 'error');
+        return;
+      }
+
+      if (!confirm('ยืนยันการไม่อนุมัติและส่งให้กลับไปแก้ไข?')) return;
+      
       setActionButtonsEnabled(false);
-      const response = await postAction({ action: 'reject', token, rejection_reason: 'ไม่อนุมัติโดยผู้อนุมัติ' });
+      document.getElementById('confirmRejectBtn').disabled = true;
+      
+      const response = await postAction({ 
+        action: 'reject', 
+        token, 
+        rejection_reason: rejectionReason,
+        form_url: FORM_URL
+      });
+      
       if (!response) {
         showToast('ไม่สามารถบันทึกการไม่อนุมัติได้', 'error');
         setActionButtonsEnabled(true);
+        document.getElementById('confirmRejectBtn').disabled = false;
         return;
       }
-      showToast('ไม่อนุมัติแล้ว และบันทึกไว้แล้ว', 'warning');
-      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+
+      if (response.result !== 'success') {
+        showToast(response.message || 'เกิดข้อผิดพลาด', 'error');
+        setActionButtonsEnabled(true);
+        document.getElementById('confirmRejectBtn').disabled = false;
+        return;
+      }
+
+      showToast('ส่งให้แก้ไขแล้ว', 'success');
+      setTimeout(() => { 
+        window.location.href = `edit.html?token=${encodeURIComponent(token)}`; 
+      }, 1500);
+    }
+
+    function toggleRejectForm() {
+      const form = document.getElementById('rejectionForm');
+      const confirmBtn = document.getElementById('confirmRejectBtn');
+      const cancelBtn = document.getElementById('cancelRejectBtn');
+      const rejectBtn = document.getElementById('rejectBtn');
+
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        rejectBtn.style.display = 'none';
+        document.getElementById('rejectionReason').focus();
+      } else {
+        form.style.display = 'none';
+        confirmBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+        rejectBtn.style.display = 'inline-block';
+        document.getElementById('rejectionReason').value = '';
+      }
     }
 
     loadToken();
