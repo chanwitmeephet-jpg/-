@@ -220,6 +220,9 @@
         showToast('กรุณาเลือกประเภทรายจ่ายและการดำเนินการ', 'error');
         return;
       }
+      
+      document.getElementById('saveBtn').disabled = true;
+      
       const response = await postAction({
         action: 'final_save',
         token,
@@ -237,12 +240,33 @@
         budget_text: currentFormData.budget_text,
         purchase_detail: currentFormData.purchase_detail
       });
+      
       if (!response || response.result !== 'success') {
         showToast('ไม่สามารถบันทึกข้อมูลได้', 'error');
+        document.getElementById('saveBtn').disabled = false;
         return;
       }
+      
+      // Lock หน้า - ซ่อนปุ่มและ disable ฟิลด์
       showToast('บันทึกข้อมูลสำเร็จแล้ว', 'success');
-      document.getElementById('saveBtn').disabled = true;
+      lockPage();
+    }
+
+    function lockPage() {
+      // แสดงข้อความสำเร็จ
+      const alert = document.querySelector('.alert');
+      alert.innerHTML = '✅ <strong>ทำการเสร็จแล้ว</strong> - ไม่สามารถแก้ไขหรือส่งข้อมูลอีกครั้งได้ โปรดติดต่อหน่วยงานที่เกี่ยวข้องหากต้องการแก้ไข';
+      alert.style.background = '#f0fff4';
+      alert.style.borderColor = '#9ae6b4';
+      alert.style.color = '#22543d';
+
+      // Disable ปุ่ม save
+      document.getElementById('saveBtn').style.display = 'none';
+
+      // Disable ฟิลด์
+      document.getElementById('expense_type').disabled = true;
+      document.getElementById('action_type').disabled = true;
+      document.getElementById('remarks').disabled = true;
     }
 
     verifyToken();
