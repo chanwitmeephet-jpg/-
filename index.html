@@ -184,7 +184,7 @@
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsd1qvZuv2mJgbIXR2PihvcMxHBgtBXnbTZLatN5ruzhOL39v8JfMTFoBaI1nTAScrDg/exec';
-    const FORM_URL = window.location.origin + window.location.pathname.replace(/(index|approve|complete)\.html$/, '');
+    const FORM_URL = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
 
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
@@ -203,8 +203,10 @@
       };
       try {
         const response = await fetch(SCRIPT_URL, options);
-        if (!response.ok) throw new Error('Network error');
-        return await response.json();
+        const text = await response.text();
+        console.log('[Index] GAS response text:', text);
+        if (!response.ok) throw new Error('Network error ' + response.status);
+        return JSON.parse(text);
       } catch (err) {
         console.warn('POST failed, trying no-cors fallback', err);
         try {
