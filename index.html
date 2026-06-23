@@ -234,6 +234,7 @@
     function getFormPayload() {
       return {
         action: 'save_page1',
+        form_url: FORM_URL,
         subject: document.getElementById('subject').value.trim(),
         requester_name: document.getElementById('requester_name').value.trim(),
         department: document.getElementById('department').value.trim(),
@@ -260,24 +261,7 @@
         return null;
       }
 
-      const token = saveResult.token;
-      const notifyResult = await postToGAS({
-        action: 'notify_line',
-        token,
-        form_url: FORM_URL,
-        subject: payload.subject,
-        requester_name: payload.requester_name,
-        department: payload.department,
-        purchase_item: payload.purchase_item,
-        purchase_reason: payload.purchase_reason,
-        quantity: payload.quantity,
-        budget: payload.budget,
-        budget_text: payload.budget_text,
-        purchase_detail: payload.purchase_detail,
-        test_mode: isTest
-      });
-
-      return { saveResult, notifyResult, token };
+      return { saveResult };
     }
 
     async function submitForm() {
@@ -295,10 +279,11 @@
         return;
       }
 
-      if (!result.notifyResult || result.notifyResult.result !== 'success') {
-        showToast('บันทึกสำเร็จ แต่แจ้งเตือน LINE ไม่สำเร็จ', 'warning');
+      if (result.saveResult.line_sent === false) {
+        const detail = result.saveResult.line_message ? ` (${result.saveResult.line_message})` : '';
+        showToast('บันทึกสำเร็จ แต่ส่ง LINE ไม่สำเร็จ' + detail, 'warning');
       } else {
-        showToast('บันทึกสำเร็จและแจ้งเตือน LINE แล้ว', 'success');
+        showToast('บันทึกสำเร็จและแจ้ง LINE แล้ว', 'success');
       }
       setButtonsDisabled(false);
     }
@@ -318,8 +303,8 @@
         return;
       }
 
-      if (!result.notifyResult || result.notifyResult.result !== 'success') {
-        showToast('ทดสอบบันทึกสำเร็จ แต่แจ้งเตือน LINE ไม่สำเร็จ', 'error');
+      if (result.saveResult.line_sent === false) {
+        showToast('ทดสอบบันทึกสำเร็จ แต่ส่ง LINE ไม่สำเร็จ', 'error');
       } else {
         showToast('ทดสอบสำเร็จ ข้อมูลถูกส่งไปยัง LINE และชีตแล้ว', 'success');
       }
