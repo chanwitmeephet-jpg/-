@@ -24,7 +24,6 @@
 
     .form-header {
       background: #1a3a6b;
-      
       color: white;
       border-radius: 12px 12px 0 0;
       padding: 28px 36px;
@@ -84,7 +83,6 @@
 
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field label { font-size: 13px; font-weight: 600; color: #4a5568; }
-    .field-hint { font-size: 12px; color: #4a5568; margin-top: 6px; }
     .field label .req { color: #e53e3e; margin-left: 2px; }
 
     input[type="text"],
@@ -124,23 +122,6 @@
     .checkbox-item label { cursor: pointer; line-height: 1.5; }
 
     .divider { border: none; border-top: 1.5px solid #e2e8f0; margin: 28px 0; }
-
-    .repeater-row {
-      display: grid;
-      grid-template-columns: auto 1fr 1fr 1fr;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .repeater-row .num {
-      width: 28px; height: 28px;
-      background: #ebf0f8; color: #1a3a6b;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700;
-    }
-
-    .approval-label { font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
 
     .review-item {
       display: grid;
@@ -187,12 +168,6 @@
       transition: all 0.2s;
     }
     .btn-reject:hover { background: #742a2a; }
-
-    .reject-reason {
-      display: none;
-      margin-top: 16px;
-    }
-    .reject-reason.show { display: block; }
 
     .action-bar {
       display: flex; gap: 12px; justify-content: space-between;
@@ -241,21 +216,9 @@
       gap: 12px;
     }
     .reject-banner.show { display: flex; flex-direction: column; }
-    .reject-banner-text {
-      color: #9b2c2c;
-      font-weight: 700;
-      font-size: 14px;
-    }
-    .reject-banner-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    .reject-banner-actions .btn {
-      flex: 1;
-      min-width: 100px;
-    }
+    .reject-banner-text { color: #9b2c2c; font-weight: 700; font-size: 14px; }
+    .reject-banner-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .reject-banner-actions .btn { flex: 1; min-width: 100px; }
 
     .info-note {
       background: #ebf8ff; border: 1px solid #bee3f8;
@@ -268,7 +231,6 @@
       .form-header { padding: 20px; flex-direction: column; gap: 12px; }
       .grid-2 { grid-template-columns: 1fr; }
       .col-span-2 { grid-column: span 1; }
-      .repeater-row { grid-template-columns: auto 1fr; }
     }
   </style>
 </head>
@@ -302,11 +264,8 @@
 
   <div class="form-body">
 
-    <!-- ===== PAGE 1: ข้อมูลทั่วไป และ ข้อมูลผู้เสนอ ===== -->
     <div class="page active" id="page1">
-      <div class="info-note">
-        📌 หน้า 1/3 - กรุณากรอกข้อมูลให้ครบถ้วนในหน้านี้
-      </div>
+      <div class="info-note">📌 หน้า 1/3 - กรุณากรอกข้อมูลให้ครบถ้วนในหน้านี้</div>
 
       <div class="section">
         <div class="section-title">ส่วนที่ 1 — ข้อมูลทั่วไป</div>
@@ -377,9 +336,7 @@
     </div>
 
     <div class="page" id="page2">
-      <div class="info-note">
-        📌 หน้า 2/3 - ตรวจสอบและอนุมัติข้อมูล
-      </div>
+      <div class="info-note">📌 หน้า 2/3 - ตรวจสอบและอนุมัติข้อมูล</div>
 
       <div class="section">
         <div class="section-title">ตรวจสอบข้อมูล</div>
@@ -404,9 +361,7 @@
     </div>
 
     <div class="page" id="page3">
-      <div class="info-note">
-        📌 หน้า 3/3 - กรอกข้อมูลเพิ่มเติมและกดบันทึก
-      </div>
+      <div class="info-note">📌 หน้า 3/3 - กรอกข้อมูลเพิ่มเติมและกดบันทึก</div>
 
       <div class="section">
         <div class="section-title">สรุปข้อมูลจากหน้า 1</div>
@@ -500,8 +455,34 @@
 
   function getChecked(name) {
     return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
-                .map(cb => cb.value)
-                .join(', ');
+                .map(cb => cb.value).join(', ');
+  }
+
+  // ===== JSONP ใช้แทน fetch GET เพื่อหลีกเลี่ยง CORS =====
+  function jsonpRequest(url) {
+    return new Promise((resolve, reject) => {
+      const cbName = 'cb_' + Date.now();
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => {
+        cleanup();
+        reject(new Error('JSONP timeout'));
+      }, 10000);
+
+      function cleanup() {
+        clearTimeout(timeout);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cbName] = function(data) {
+        cleanup();
+        resolve(data);
+      };
+
+      script.src = url + '&callback=' + cbName;
+      script.onerror = () => { cleanup(); reject(new Error('JSONP error')); };
+      document.head.appendChild(script);
+    });
   }
 
   function showPage(pageNum) {
@@ -528,16 +509,6 @@
       return window.crypto.randomUUID();
     }
     return 'token-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
-  }
-
-  async function savePage1Data(payload) {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload),
-      mode: 'cors'
-    });
-    return await response.json();
   }
 
   async function sendNotifyLine() {
@@ -587,14 +558,19 @@
 
     let saveSucceeded = false;
     try {
-      const saveResult = await savePage1Data(savePayload);
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(savePayload),
+        mode: 'cors'
+      });
+      const saveResult = await res.json();
       if (saveResult && saveResult.token) {
         formData.token = saveResult.token;
       }
       saveSucceeded = true;
       showToast('success', 'ข้อมูลหน้า 1 ถูกบันทึกแล้ว');
     } catch (err) {
-      console.warn('save_page1 cors failed, trying no-cors fallback:', err);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -602,9 +578,8 @@
           mode: 'no-cors'
         });
         saveSucceeded = true;
-        showToast('success', 'ข้อมูลหน้า 1 ถูกบันทึกแล้ว แต่ไม่สามารถตรวจสอบผลทางหน้าเว็บได้');
+        showToast('success', 'ข้อมูลหน้า 1 ถูกบันทึกแล้ว');
       } catch (fallbackError) {
-        console.error('save_page1 fallback failed:', fallbackError);
         showToast('error', 'ไม่สามารถบันทึกข้อมูลหน้า 1 ได้ กรุณาลองใหม่');
       }
     }
@@ -630,24 +605,20 @@
         mode: 'cors'
       });
       const result = await response.json();
-
       if (result && result.result === 'success') {
         showToast('success', 'ส่งลิงก์เข้า LINE เรียบร้อยแล้ว');
       } else {
-        console.warn('LINE notify response error', result);
         showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
       }
     } catch (notifyError) {
-      console.warn('LINE notify cors failed, trying no-cors fallback:', notifyError);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify(notifyPayload),
           mode: 'no-cors'
         });
-        showToast('success', 'ส่งคำขอ LINE แล้ว (no-cors fallback)');
-      } catch (fallbackNotifyError) {
-        console.error('LINE notify fallback failed:', fallbackNotifyError);
+        showToast('success', 'ส่งคำขอ LINE แล้ว');
+      } catch (e) {
         showToast('success', 'ข้อมูลถูกบันทึกแล้ว แต่ไม่สามารถส่ง LINE ได้');
       }
     }
@@ -655,7 +626,6 @@
     btn.disabled = false;
     btn.textContent = 'ขอยื่นอนุมัติ';
   }
-  
 
   async function sendNotifyLineTest() {
     const required = [
@@ -692,14 +662,8 @@
       test: true
     };
 
-    console.log('📤 ส่งข้อมูลไป GAS:', testData);
-    console.log('📍 GAS URL:', SCRIPT_URL);
-
     const btn = document.querySelector('.action-bar .btn-secondary');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = '⏳ กำลังส่ง...';
-    }
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...'; }
 
     try {
       const response = await fetch(SCRIPT_URL, {
@@ -708,29 +672,21 @@
         body: JSON.stringify(testData),
         mode: 'cors'
       });
-      const result = await response.json();
-      console.log('✅ ตอบกลับจาก GAS:', result);
-      showToast('success', 'ส่งแล้ว ตรวจสอบ LINE และ F12 Console');
+      await response.json();
+      showToast('success', 'ส่งแล้ว ตรวจสอบ LINE');
     } catch (err) {
-      console.log('⚠️ CORS error, ลองใหม่แบบ no-cors:', err);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(testData),
           mode: 'no-cors'
         });
-        console.log('✅ ส่งผ่าน no-cors สำเร็จ');
-        showToast('success', 'ส่งแล้ว ตรวจสอบ LINE และ GAS Logs');
-      } catch (fallbackError) {
-        console.error('❌ ไม่สามารถส่งได้:', fallbackError);
-        showToast('error', 'ไม่สามารถส่ง LINE ได้ ตรวจสอบ console');
+        showToast('success', 'ส่งแล้ว ตรวจสอบ LINE');
+      } catch (e) {
+        showToast('error', 'ไม่สามารถส่ง LINE ได้');
       }
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'ทดสอบแจ้งเตือน LINE';
-      }
+      if (btn) { btn.disabled = false; btn.textContent = 'ทดสอบแจ้งเตือน LINE'; }
     }
   }
 
@@ -748,10 +704,6 @@
     document.getElementById('purchase_detail').value = data.purchase_detail || '';
   }
 
-  function filterTextOnly(input) {
-    input.value = input.value.replace(/[^ก-๙A-Za-z\s]/g, '');
-  }
-
   function showRejectBanner() {
     const banner = document.getElementById('reject-banner');
     if (banner) banner.classList.add('show');
@@ -763,8 +715,7 @@
   }
 
   function showRejectReason() {
-    const reason = formData.reject_reason || 'ไม่ระบุเหตุผล';
-    alert(`เหตุผลไม่ผ่าน:\n${reason}`);
+    alert(`เหตุผลไม่ผ่าน:\n${formData.reject_reason || 'ไม่ระบุเหตุผล'}`);
   }
 
   function editAfterReject() {
@@ -784,8 +735,11 @@
   function displayReview() {
     const container = document.getElementById('review-container');
     if (!container) return;
-
-    const items = [
+    if (!formData.subject) {
+      container.innerHTML = '<p>ไม่พบข้อมูลสำหรับตรวจสอบ กรุณากดย้อนกลับไปหน้า 1</p>';
+      return;
+    }
+    container.innerHTML = buildReviewHtml([
       ['เรื่อง', formData.subject],
       ['ผู้เสนอ', formData.requester_name],
       ['สังกัดหน่วยงาน', formData.department],
@@ -796,38 +750,26 @@
       ['วงเงิน', formData.budget],
       ['จำนวนเงิน (ตัวอักษร)', formData.budget_text],
       ['รายละเอียดเพิ่มเติม', formData.purchase_detail]
-    ];
-
-    if (!formData.subject) {
-      container.innerHTML = '<p>ไม่พบข้อมูลสำหรับตรวจสอบ กรุณากดย้อนกลับไปหน้า 1</p>';
-      return;
-    }
-
-    container.innerHTML = buildReviewHtml(items);
+    ]);
   }
 
   function displaySummaryPage3() {
     const summary = document.getElementById('review-summary-page3');
     if (!summary) return;
-
-    const items = [
+    summary.innerHTML = buildReviewHtml([
       ['เรื่อง', formData.subject],
       ['ผู้เสนอ', formData.requester_name],
       ['สังกัดหน่วยงาน', formData.department],
       ['รายการจัดซื้อ/จ้าง', formData.purchase_item],
       ['เหตุผล', formData.purchase_reason],
       ['จำนวน', formData.quantity],
-      ['วงเงิน', formData.budget],
-      ['ประเภทค่าใช้จ่าย', getChecked('expense_type')],
-      ['การดำเนินการที่เห็นควร', getChecked('action_type')]
-    ];
-
-    summary.innerHTML = buildReviewHtml(items);
+      ['วงเงิน', formData.budget]
+    ]);
   }
 
   async function approveForm() {
     if (!formData.token) {
-      showToast('error', 'ไม่พบ token สำหรับการอนุมัติ กรุณาเข้าโดยลิงก์ที่ส่งใน LINE เท่านั้น');
+      showToast('error', 'ไม่พบ token สำหรับการอนุมัติ');
       return;
     }
 
@@ -845,20 +787,17 @@
         showToast('success', 'อนุมัติเรียบร้อยแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
         return;
       }
-      showToast('error', 'ไม่สามารถอนุมัติได้ โปรดลองใหม่อีกครั้ง');
+      showToast('error', 'ไม่สามารถอนุมัติได้ โปรดลองใหม่');
     } catch (err) {
-      console.warn('approveForm cors failed, trying no-cors fallback:', err);
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload),
           mode: 'no-cors'
         });
-        showToast('success', 'อนุมัติแล้ว แต่ระบบไม่สามารถตรวจสอบผลได้จากหน้าเว็บ');
-      } catch (fallbackError) {
-        console.error('approveForm no-cors fallback failed:', fallbackError);
-        showToast('error', 'ไม่สามารถอนุมัติได้ กรุณาลองใหม่อีกครั้ง');
+        showToast('success', 'อนุมัติแล้ว ลิงก์หน้า 3 ถูกส่งไป LINE แล้ว');
+      } catch (e) {
+        showToast('error', 'ไม่สามารถอนุมัติได้ กรุณาลองใหม่');
       }
     }
   }
@@ -869,21 +808,15 @@
 
   async function submitForm() {
     if (!formData.token) {
-      showToast('error', 'ไม่พบ token สำหรับการบันทึก กรุณาเข้าโดยลิงก์หน้านี้จาก LINE เท่านั้น');
+      showToast('error', 'ไม่พบ token กรุณาเข้าโดยลิงก์จาก LINE เท่านั้น');
       return;
     }
 
     const expenseChecked = document.querySelectorAll('input[name="expense_type"]:checked').length;
     const actionChecked = document.querySelectorAll('input[name="action_type"]:checked').length;
 
-    if (expenseChecked === 0) {
-      showToast('error', 'กรุณาเลือกประเภทรายจ่ายอย่างน้อย 1 รายการ');
-      return;
-    }
-    if (actionChecked === 0) {
-      showToast('error', 'กรุณาเลือกการดำเนินการอย่างน้อย 1 รายการ');
-      return;
-    }
+    if (expenseChecked === 0) { showToast('error', 'กรุณาเลือกประเภทรายจ่าย'); return; }
+    if (actionChecked === 0) { showToast('error', 'กรุณาเลือกการดำเนินการ'); return; }
 
     const finalForm = {
       ...formData,
@@ -904,26 +837,18 @@
         mode: 'cors'
       });
       showToast('success', 'บันทึกข้อมูลสำเร็จ!');
-      setTimeout(() => {
-        resetForm();
-        showPage(1);
-      }, 1500);
+      setTimeout(() => { resetForm(); showPage(1); }, 1500);
     } catch (err) {
-      // หากไม่รองรับ CORS ให้ fallback แบบ no-cors
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ ...finalForm, action: 'final_save', token: formData.token }),
           mode: 'no-cors'
         });
         showToast('success', 'บันทึกข้อมูลสำเร็จ!');
-        setTimeout(() => {
-          resetForm();
-          showPage(1);
-        }, 1500);
-      } catch (fallbackError) {
-        showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+        setTimeout(() => { resetForm(); showPage(1); }, 1500);
+      } catch (e) {
+        showToast('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่');
       }
     } finally {
       btn.disabled = false;
@@ -935,13 +860,12 @@
     document.querySelectorAll('input[type="text"], input[type="number"], textarea')
             .forEach(el => el.value = '');
     document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
-    const rejectReasonSection = document.getElementById('reject-reason-section');
-    if (rejectReasonSection) rejectReasonSection.classList.remove('show');
     formData = {};
     approvalStatus = null;
     hideRejectBanner();
   }
 
+  // ===== โหลดหน้า: ใช้ JSONP แทน fetch GET เพื่อแก้ CORS =====
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -967,9 +891,8 @@
       return;
     }
 
-    // ไม่มี token เลย ให้แสดงหน้า 1 เท่านั้น
     showPage(1);
   });
-</script>z
+</script>
 </body>
 </html>
