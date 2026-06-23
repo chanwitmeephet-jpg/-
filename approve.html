@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ใบเสนอซื้อ/จ้าง | อนุมัติ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3a6b;
+      --bg: #eef2fb;
+      --surface: #ffffff;
+      --border: #d2d8e8;
+      --text: #1f2937;
+      --muted: #4a5568;
+      --success: #2f855a;
+      --danger: #c53030;
+      --warning: #d69e2e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(180deg, rgba(26,58,107,0.16) 0%, rgba(238,242,251,1) 100%);
+      color: var(--text);
+    }
+    .container { max-width: 920px; margin: 0 auto; padding: 22px 18px 40px; }
+    .card { background: var(--surface); border-radius: 24px; box-shadow: 0 20px 48px rgba(15,23,42,0.1); overflow: hidden; border: 1px solid rgba(26,58,107,0.12); }
+    .banner { background: var(--primary); color: #fff; padding: 30px 28px; }
+    .banner h1 { margin-bottom: 10px; font-size: 26px; }
+    .banner p { margin: 0; opacity: 0.95; line-height: 1.75; }
+    .content { padding: 32px 28px; }
+    .section-title { margin-bottom: 20px; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: var(--primary); text-transform: uppercase; }
+    .info-block { display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-bottom: 24px; }
+    .info-label { font-size: 13px; color: var(--muted); }
+    .token-chip { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); padding: 12px 14px; border-radius: 14px; font-size: 14px; }
+    .review-card { border: 1px solid var(--border); border-radius: 18px; padding: 22px; background: #f9fbff; }
+    .review-row { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+    .review-row:last-child { border-bottom: none; }
+    .review-label { color: var(--muted); font-weight: 700; }
+    .review-value { color: var(--text); }
+    .btn-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 28px; }
+    .btn { border: none; border-radius: 14px; min-width: 150px; padding: 14px 18px; font-size: 15px; cursor: pointer; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .btn-primary { background: var(--success); color: #fff; }
+    .btn-secondary { background: #edf2f7; color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn:hover { transform: translateY(-1px); }
+    .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 999px; background: rgba(47,133,90,0.12); color: #276749; font-weight: 700; }
+    .alert { border-radius: 16px; padding: 18px 20px; background: #f7f9ff; border: 1px solid #d2d8e8; margin-bottom: 24px; color: var(--text); }
+    .toast { position: fixed; bottom: 20px; right: 20px; display: none; min-width: 240px; padding: 16px 18px; border-radius: 16px; color: #fff; z-index: 999; font-weight: 600; box-shadow: 0 18px 42px rgba(15,23,42,0.15); }
+    .toast.show { display: block; animation: fadeInUp 0.2s ease forwards; }
+    .toast.success { background: #2f855a; }
+    .toast.error { background: #c53030; }
+    .toast.warning { background: #d69e2e; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media(max-width: 720px) { .info-block { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="banner">
+        <h1>หน้าอนุมัติ</h1>
+        <p>ผู้อำนวยการสามารถตรวจสอบเนื้อหาและส่งต่อไปยังหน้ากรอกข้อมูลเพิ่มเติมได้ทันที</p>
+      </div>
+      <div class="content">
+        <div class="info-block">
+          <div>
+            <div class="section-title">TOKEN</div>
+            <div id="tokenValue" class="token-chip">กำลังโหลด...</div>
+          </div>
+          <div>
+            <div class="status-badge" id="statusBadge">รอโหลด</div>
+          </div>
+        </div>
+        <div id="messageBox" class="alert">กำลังเรียกข้อมูลจากระบบ โปรดรอสักครู่...</div>
+        <div class="section-title">ข้อมูลจากผู้เสนอ</div>
+        <div id="reviewCard" class="review-card"></div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="approveBtn" onclick="approveRequest()">อนุมัติ</button>
+          <button class="btn btn-danger" id="rejectBtn" onclick="rejectRequest()">ไม่อนุมัติ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcchB888q8y_MIz2e3lPB4VnXftjcZSzTfDy-LIAvUXH4w2PMUeiAOSAILbauVtgIE2w/exec';
+    const FORM_URL = 'https://chanwitmeephet-jpg.github.io/-/';
+    const token = new URLSearchParams(window.location.search).get('token');
+
+    function showToast(message, type='success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast show ${type}`;
+      clearTimeout(window.toastTimeout);
+      window.toastTimeout = setTimeout(() => { toast.className = 'toast'; }, 3600);
+    }
+
+    function setError(message) {
+      document.getElementById('messageBox').textContent = message;
+      document.getElementById('messageBox').style.borderColor = '#feb2b2';
+    }
+
+    async function postAction(payload) {
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error('Network error');
+        return await response.json();
+      } catch (err) {
+        console.warn(err);
+        try {
+          await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+          showToast('Fallback no-cors ถูกใช้งานแล้ว', 'warning');
+          return null;
+        } catch {
+          throw new Error('ไม่สามารถเชื่อมต่อ GAS ได้');
+        }
+      }
+    }
+
+    function renderReview(data) {
+      const card = document.getElementById('reviewCard');
+      if (!data) {
+        card.innerHTML = '<p>ไม่พบข้อมูล</p>';
+        return;
+      }
+      const fields = [
+        ['เรื่อง', data.subject],
+        ['ผู้เสนอ', data.requester_name],
+        ['สังกัดหน่วยงาน', data.department],
+        ['ตำแหน่ง', data.position],
+        ['รายการ', data.purchase_item],
+        ['เหตุผล', data.purchase_reason],
+        ['จำนวน', data.quantity],
+        ['วงเงิน', data.budget],
+        ['จำนวนเงิน (ตัวอักษร)', data.budget_text],
+        ['รายละเอียดเพิ่มเติม', data.purchase_detail]
+      ];
+      card.innerHTML = fields.map(([label, value]) =>
+        `<div class="review-row"><div class="review-label">${label}</div><div class="review-value">${value || '-'}</div></div>`
+      ).join('');
+    }
+
+    async function loadToken() {
+      if (!token) {
+        setError('ไม่พบ token ใน URL กรุณาเปิดลิงก์ approve.html?token=xxx');
+        document.getElementById('approveBtn').disabled = true;
+        document.getElementById('rejectBtn').disabled = true;
+        return;
+      }
+      document.getElementById('tokenValue').textContent = token;
+      const result = await postAction({ action: 'check_token', token });
+      if (!result) {
+        setError('ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง');
+        return;
+      }
+      if (!result.valid) {
+        setError(`Token ไม่ถูกต้อง: ${result.reason}`);
+        document.getElementById('approveBtn').disabled = true;
+        document.getElementById('rejectBtn').disabled = true;
+        return;
+      }
+      document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
+      document.getElementById('messageBox').textContent = 'ข้อมูลถูกโหลดเรียบร้อยแล้ว กรุณาตรวจสอบก่อนอนุมัติ';
+      renderReview(result.formData);
+    }
+
+    async function approveRequest() {
+      const response = await postAction({ action: 'approve', token, form_url: FORM_URL });
+      if (!response || response.result !== 'success') {
+        showToast('ไม่สามารถอนุมัติได้', 'error');
+        return;
+      }
+      showToast('อนุมัติเรียบร้อย ส่งลิงก์หน้าที่ 3 ไป LINE แล้ว', 'success');
+      document.getElementById('statusBadge').textContent = 'approved';
+    }
+
+    async function rejectRequest() {
+      showToast('ยังไม่รองรับการปฏิเสธในระบบนี้', 'warning');
+    }
+
+    loadToken();
+  </script>
+</body>
+</html>

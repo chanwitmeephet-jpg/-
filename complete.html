@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ใบเสนอซื้อ/จ้าง | กรอกข้อมูลเพิ่มเติม</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a3a6b;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --border: #d6d9e6;
+      --text: #1f2937;
+      --muted: #4a5568;
+      --success: #2f855a;
+      --danger: #c53030;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Sarabun', sans-serif;
+      background: radial-gradient(circle at top left, rgba(26,58,107,0.12), transparent 30%), var(--bg);
+      color: var(--text);
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px 18px 40px; }
+    .card { background: var(--surface); border-radius: 24px; border: 1px solid rgba(26,58,107,0.12); box-shadow: 0 24px 54px rgba(15,23,42,0.08); overflow: hidden; }
+    .hero { padding: 32px 28px; background: var(--primary); color: #fff; }
+    .hero h1 { margin: 0 0 10px; font-size: 26px; }
+    .hero p { margin: 0; opacity: 0.92; line-height: 1.75; }
+    .content { padding: 32px 28px 36px; }
+    .section-title { margin-bottom: 16px; color: var(--primary); font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .field { display: flex; flex-direction: column; gap: 9px; }
+    label { color: var(--muted); font-weight: 600; }
+    .req { color: var(--danger); }
+    input, textarea, select { width: 100%; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--border); background: #f9fbff; font-size: 15px; color: var(--text); transition: border-color 0.2s ease; }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(26,58,107,0.12); }
+    .summary-panel { padding: 18px 20px; border-radius: 20px; border: 1px solid var(--border); background: #eef2ff; }
+    .summary-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+    .summary-header h2 { margin: 0; font-size: 18px; }
+    .status-pill { padding: 10px 16px; border-radius: 999px; background: rgba(47,133,90,0.12); color: #276749; font-weight: 700; }
+    .summary-row { display: grid; grid-template-columns: 180px 1fr; gap: 12px; margin-bottom: 12px; }
+    .summary-label { color: var(--muted); font-weight: 700; }
+    .summary-value { color: var(--text); }
+    .button-group { display: flex; justify-content: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+    .btn { border: none; cursor: pointer; border-radius: 14px; font-weight: 700; transition: transform 0.2s ease; padding: 14px 20px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #edf2f7; color: var(--text); }
+    .btn-danger { background: #c53030; color: #fff; }
+    .btn:hover { transform: translateY(-1px); }
+    .toast { position: fixed; bottom: 22px; right: 22px; display: none; background: #2f855a; color: #fff; padding: 16px 18px; border-radius: 16px; box-shadow: 0 18px 48px rgba(15,23,42,0.18); font-weight: 700; z-index: 999; }
+    .toast.show { display: block; }
+    .alert { padding: 19px 20px; border-radius: 18px; background: #f7f9ff; border: 1px solid #d2d8e8; color: var(--text); margin-bottom: 26px; }
+    @media(max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="hero">
+        <h1>หน้า 3 | กรอกข้อมูลเพิ่มเติม</h1>
+        <p>กรอกข้อมูลเพิ่มเติมและยืนยันการบันทึกเมื่อ token ผ่านการอนุมัติแล้ว</p>
+      </div>
+      <div class="content">
+        <div class="alert">โปรดตรวจสอบสถานะ token ก่อน เพื่อให้แน่ใจว่าได้รับอนุมัติแล้วเท่านั้น</div>
+        <div class="section-title">สรุปข้อมูลจากหน้า 1</div>
+        <div id="summaryPanel" class="summary-panel"></div>
+
+        <div class="section-title">ข้อมูลเพิ่มเติม</div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label>ประเภทรายจ่าย <span class="req">*</span></label>
+            <select id="expense_type">
+              <option value="">เลือกประเภท</option>
+              <option value="ค่าวัสดุ">ค่าวัสดุ</option>
+              <option value="ค่าใช้สอย">ค่าใช้สอย</option>
+              <option value="ค่าครุภัณฑ์">ค่าครุภัณฑ์</option>
+              <option value="ค่าที่ดินและสิ่งก่อสร้าง">ค่าที่ดินและสิ่งก่อสร้าง</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>การดำเนินการที่เห็นควร <span class="req">*</span></label>
+            <select id="action_type">
+              <option value="">เลือกการดำเนินการ</option>
+              <option value="พิจารณาอนุมัติ">พิจารณาอนุมัติ</option>
+              <option value="พิจารณาไม่อนุมัติ">พิจารณาไม่อนุมัติ</option>
+              <option value="ส่งเข้ากระบวนการจัดซื้อ">ส่งเข้ากระบวนการจัดซื้อ</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>หมายเหตุเพิ่มเติม</label>
+            <textarea id="remarks" placeholder="เขียนหมายเหตุถ้าจำเป็น"></textarea>
+          </div>
+        </div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="window.location.href='index.html'">กลับสู่หน้าแรก</button>
+          <button class="btn btn-primary" id="saveBtn" onclick="saveFinal()">บันทึกข้อมูลครบถ้วน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcchB888q8y_MIz2e3lPB4VnXftjcZSzTfDy-LIAvUXH4w2PMUeiAOSAILbauVtgIE2w/exec';
+    const token = new URLSearchParams(window.location.search).get('token');
+    let currentFormData = null;
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = type === 'error' ? '#c53030' : '#2f855a';
+      toast.className = 'toast show';
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => { toast.className = 'toast'; }, 3600);
+    }
+
+    async function postAction(body) {
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!response.ok) throw new Error('Network error');
+        return await response.json();
+      } catch (err) {
+        console.warn(err);
+        try {
+          await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(body) });
+          showToast('Fallback no-cors ถูกใช้งานแล้ว', 'warning');
+          return null;
+        } catch {
+          throw new Error('ไม่สามารถเชื่อมต่อ GAS ได้');
+        }
+      }
+    }
+
+    function renderSummary(data) {
+      if (!data) return;
+      currentFormData = data;
+      const panel = document.getElementById('summaryPanel');
+      panel.innerHTML = `
+        <div class="summary-header">
+          <h2>ข้อมูลที่ตรวจสอบแล้ว</h2>
+          <div class="status-pill">${data.status || 'unknown'}</div>
+        </div>
+        <div class="summary-row"><div class="summary-label">เรื่อง</div><div class="summary-value">${data.subject || '-'}</div></div>
+        <div class="summary-row"><div class="summary-label">ผู้เสนอ</div><div class="summary-value">${data.requester_name || '-'}</div></div>
+        <div class="summary-row"><div class="summary-label">สังกัด</div><div class="summary-value">${data.department || '-'}</div></div>
+        <div class="summary-row"><div class="summary-label">รายการ</div><div class="summary-value">${data.purchase_item || '-'}</div></div>
+        <div class="summary-row"><div class="summary-label">เหตุผล</div><div class="summary-value">${data.purchase_reason || '-'}</div></div>
+        <div class="summary-row"><div class="summary-label">วงเงิน</div><div class="summary-value">${data.budget || '-'} บาท</div></div>
+      `;
+    }
+
+    async function verifyToken() {
+      if (!token) {
+        showToast('ไม่พบ token ใน URL', 'error');
+        document.getElementById('saveBtn').disabled = true;
+        return;
+      }
+      const result = await postAction({ action: 'check_token', token });
+      if (!result || !result.valid || result.status !== 'approved') {
+        showToast('Token ไม่ถูกต้องหรือยังไม่อนุมัติ', 'error');
+        document.getElementById('saveBtn').disabled = true;
+        return;
+      }
+      renderSummary(result.formData);
+      showToast('Token ผ่านการตรวจสอบแล้ว', 'success');
+    }
+
+    async function saveFinal() {
+      if (!currentFormData) {
+        showToast('ยังไม่มีข้อมูลสำหรับบันทึก', 'error');
+        return;
+      }
+      const expenseType = document.getElementById('expense_type').value;
+      const actionType = document.getElementById('action_type').value;
+      const remarks = document.getElementById('remarks').value.trim();
+      if (!expenseType || !actionType) {
+        showToast('กรุณาเลือกประเภทรายจ่ายและการดำเนินการ', 'error');
+        return;
+      }
+      const response = await postAction({
+        action: 'final_save',
+        token,
+        expense_type: expenseType,
+        action_type: actionType,
+        remarks,
+        subject: currentFormData.subject,
+        requester_name: currentFormData.requester_name,
+        department: currentFormData.department,
+        position: currentFormData.position,
+        purchase_item: currentFormData.purchase_item,
+        purchase_reason: currentFormData.purchase_reason,
+        quantity: currentFormData.quantity,
+        budget: currentFormData.budget,
+        budget_text: currentFormData.budget_text,
+        purchase_detail: currentFormData.purchase_detail
+      });
+      if (!response || response.result !== 'success') {
+        showToast('ไม่สามารถบันทึกข้อมูลได้', 'error');
+        return;
+      }
+      showToast('บันทึกข้อมูลสำเร็จแล้ว', 'success');
+      document.getElementById('saveBtn').disabled = true;
+    }
+
+    verifyToken();
+  </script>
+</body>
+</html>
