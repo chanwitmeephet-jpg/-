@@ -112,8 +112,11 @@
     }
 
     function setError(message) {
-      document.getElementById('messageBox').textContent = message;
-      document.getElementById('messageBox').style.borderColor = '#feb2b2';
+      const box = document.getElementById('messageBox');
+      box.textContent = message;
+      box.style.borderColor = '#feb2b2';
+      box.style.background = '#fff5f5';
+      box.style.color = '#742a2a';
     }
 
     async function postAction(payload) {
@@ -201,7 +204,12 @@
           return;
         }
         document.getElementById('statusBadge').textContent = result.status || 'ไม่มีสถานะ';
-        document.getElementById('messageBox').textContent = `Token ผ่านการตรวจสอบแล้ว (สถานะ: ${result.status || 'unknown'})`;
+        const msgBox = document.getElementById('messageBox');
+        msgBox.textContent = `Token ผ่านการตรวจสอบแล้ว (สถานะ: ${result.status || 'unknown'})`;
+        // reset any error styling
+        msgBox.style.borderColor = '#d2d8e8';
+        msgBox.style.background = '#f7f9ff';
+        msgBox.style.color = '';
         renderReview(result.formData);
       } catch (err) {
         console.error('loadToken error:', err);
